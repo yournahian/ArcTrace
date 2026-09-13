@@ -6,12 +6,16 @@ import { ProofOfWork } from '@/components/ProofOfWork';
 import { ArcGems } from '@/components/ArcGems';
 import { TopArcPosts } from '@/components/TopArcPosts';
 import { ArcLogo } from '@/components/ArcLogo';
+import { FollowGate } from '@/components/FollowGate';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState<TabType>('proof');
 
   return (
     <div className="app-viewport">
+      {/* Access Gate Requiring Visitor to Follow @yournahian on X */}
+      <FollowGate />
+
       {/* Top Header */}
       <header className="app-header">
         <div className="brand-link">

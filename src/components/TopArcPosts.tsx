@@ -28,8 +28,10 @@ function formatDate(dateStr: string): string {
   }
 }
 
+const SAMPLE_HANDLES = ['yournahian', 'jerallaire', 'CircleDevs', 'VitalikButerin'];
+
 export const TopArcPosts: React.FC = () => {
-  const [handle, setHandle] = useState('yournahian');
+  const [handle, setHandle] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [posts, setPosts] = useState<ArcPost[]>([]);
@@ -60,6 +62,9 @@ export const TopArcPosts: React.FC = () => {
       const sorted = allPosts.sort((a, b) => (b.views || 0) - (a.views || 0));
       setPosts(sorted);
       setSearchedUser(data.profile?.screen_name || clean);
+      if (sorted.length === 0) {
+        setError(`No Arc posts detected for @${clean}. Try another handle.`);
+      }
     } catch (err) {
       console.error(err);
       setError('Unable to load Arc posts');
@@ -67,10 +72,6 @@ export const TopArcPosts: React.FC = () => {
       setLoading(false);
     }
   };
-
-  React.useEffect(() => {
-    fetchTopPosts('yournahian');
-  }, []);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,12 +89,12 @@ export const TopArcPosts: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSearch} className="search-form" style={{ marginBottom: '24px' }}>
+      <form onSubmit={handleSearch} className="search-form" style={{ marginBottom: '14px' }}>
         <input
           type="text"
           value={handle}
           onChange={(e) => setHandle(e.target.value)}
-          placeholder="Enter an X username (e.g. yournahian)"
+          placeholder="Enter an X username"
           className="pow-input"
         />
         {handle.trim() && (
@@ -106,6 +107,28 @@ export const TopArcPosts: React.FC = () => {
         )}
       </form>
 
+      {/* Quick Try Sample Handles */}
+      {posts.length === 0 && !loading && (
+        <div className="sample-handles" style={{ marginBottom: '24px' }}>
+          <span style={{ fontSize: '11px', color: 'var(--arc-sky-sync)', fontWeight: '600', marginRight: '4px' }}>
+            Quick Try:
+          </span>
+          {SAMPLE_HANDLES.map((h) => (
+            <button
+              key={h}
+              type="button"
+              className="sample-chip"
+              onClick={() => {
+                setHandle(h);
+                fetchTopPosts(h);
+              }}
+            >
+              @{h}
+            </button>
+          ))}
+        </div>
+      )}
+
       {loading && (
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '180px' }}>
           <div className="loading-dots">
@@ -116,7 +139,7 @@ export const TopArcPosts: React.FC = () => {
         </div>
       )}
 
-      {error && <p style={{ color: '#f87171', textAlign: 'center', fontSize: '14px' }}>{error}</p>}
+      {error && <p style={{ color: '#f87171', textAlign: 'center', fontSize: '14px', marginTop: '10px' }}>{error}</p>}
 
       {!loading && posts.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
