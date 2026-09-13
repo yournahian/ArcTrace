@@ -22,7 +22,7 @@ export const FollowGate: React.FC = () => {
     // Switch to detecting state
     setStep('detecting');
 
-    // Simulate verification check (3.5 seconds)
+    // Processing period (3.5 seconds)
     setTimeout(() => {
       setStep('unlocked');
     }, 3500);
@@ -71,7 +71,7 @@ export const FollowGate: React.FC = () => {
         {/* Banner with Arc branding */}
         <div
           style={{
-            height: '100px',
+            height: '90px',
             background: 'linear-gradient(135deg, #0A1224 0%, #1E3A8A 50%, #00E5FF 100%)',
             position: 'relative',
             display: 'flex',
@@ -182,49 +182,34 @@ export const FollowGate: React.FC = () => {
                   marginTop: '12px',
                 }}
               >
-                Detecting follow status on X...
+                Detecting whether you followed...
               </p>
               <p style={{ fontSize: '12px', color: 'var(--arc-text-dim)', marginTop: '4px' }}>
-                Verifying your connection to @yournahian
+                Checking connection to @yournahian on X
               </p>
             </div>
           )}
 
           {step === 'unlocked' && (
-            <div style={{ padding: '8px 0' }}>
-              <div
+            <div style={{ padding: '12px 0 6px 0' }}>
+              <p
                 style={{
-                  width: '44px',
-                  height: '44px',
-                  borderRadius: '50%',
-                  background: 'rgba(16, 185, 129, 0.15)',
-                  border: '1px solid #10B981',
-                  color: '#10B981',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  margin: '0 auto 12px auto',
+                  fontSize: '16px',
+                  fontWeight: '700',
+                  color: '#ffffff',
+                  lineHeight: '1.4',
+                  marginBottom: '16px',
                 }}
               >
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="22" height="22">
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              </div>
-
-              <h3 style={{ fontSize: '17px', fontWeight: '700', color: '#ffffff' }}>
-                Access Verified!
-              </h3>
-              <p style={{ color: 'var(--arc-sky-sync)', fontSize: '13px', marginTop: '4px' }}>
-                Welcome to ArcTrace. Explore real Arc Network proof-of-work.
+                I don&apos;t know if you followed, but there you go.
               </p>
 
               <button
                 type="button"
                 onClick={handleEnter}
                 style={{
-                  marginTop: '18px',
                   width: '100%',
-                  background: 'linear-gradient(135deg, #10B981, #059669)',
+                  background: 'linear-gradient(135deg, #2563EB, #1D4ED8)',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '14px',
@@ -232,10 +217,19 @@ export const FollowGate: React.FC = () => {
                   fontSize: '15px',
                   fontWeight: '700',
                   cursor: 'pointer',
-                  boxShadow: '0 6px 20px rgba(16, 185, 129, 0.4)',
+                  boxShadow: '0 6px 20px rgba(37, 99, 235, 0.4)',
+                  transition: 'all 0.15s ease',
+                }}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.transform = 'translateY(-1px)';
+                  e.currentTarget.style.boxShadow = '0 8px 24px rgba(0, 229, 255, 0.35)';
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.transform = 'translateY(0)';
+                  e.currentTarget.style.boxShadow = '0 6px 20px rgba(37, 99, 235, 0.4)';
                 }}
               >
-                Enter ArcTrace
+                Continue to ArcTrace
               </button>
             </div>
           )}
