@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Download, Share2, Sparkles, RefreshCw, Star, Copy, Check } from 'lucide-react';
 import { exportArcCardPNG } from './ArcCardCanvasExporter';
 import { ArcLogo } from './ArcLogo';
@@ -14,41 +14,12 @@ export interface CardArchetype {
   iconBg: string;
 }
 
-const ARCHETYPES: Record<string, CardArchetype> = {
-  hater: {
-    id: 'hater',
-    title: 'Diamond-Tier Hater',
-    lore: 'Primarily defined by being antagonistic or contrarian, especially towards competitors (fair).',
-    rarity: 'LEGENDARY',
-    glowColor: '#EF4444',
-    image: '/cards/hater.png',
-    badgeEmoji: '👊',
-    iconBg: '#EF4444',
-  },
-  true_og: {
-    id: 'true_og',
-    title: 'True OG',
-    lore: 'Respected UNC in the space. Revered for experience or influence. Why are you still here?',
-    rarity: 'LEGENDARY',
-    glowColor: '#A855F7',
-    image: '/cards/true_og.png',
-    badgeEmoji: '👑',
-    iconBg: '#8B5CF6',
-  },
-  no_tech: {
-    id: 'no_tech',
-    title: 'No Technical Ability',
-    lore: 'Protector of the timeline. Fights and fuels slop full-time. Screentime go brrrr',
-    rarity: 'RARE',
-    glowColor: '#EC4899',
-    image: '/cards/kate.png',
-    badgeEmoji: '⚔️',
-    iconBg: '#EC4899',
-  },
+// 100% Original Arc Network Archetypes (No Monad copies)
+export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
   pioneer: {
     id: 'pioneer',
-    title: 'Mainnet Pioneer',
-    lore: 'Bridged liquidity on Block #1 and never bridged back. Holds genesis conviction through all market weather.',
+    title: 'Genesis Pioneer',
+    lore: 'Bridged liquidity on Genesis Block #1 and never bridged back. Holds unshakable conviction in the Economic OS.',
     rarity: 'MYTHIC',
     glowColor: '#00E5FF',
     image: '/cards/pioneer.jpg',
@@ -57,44 +28,78 @@ const ARCHETYPES: Record<string, CardArchetype> = {
   },
   architect: {
     id: 'architect',
-    title: 'Arc Architect',
-    lore: 'Deploys directly to production at 3:00 AM with zero test suite. Sub-second finality is their native language.',
+    title: 'Economic Architect',
+    lore: 'Deploys composable financial primitives directly to Arc testnet. Sub-second finality is their native language.',
     rarity: 'LEGENDARY',
     glowColor: '#F59E0B',
     image: '/cards/architect.jpg',
     badgeEmoji: '⚙️',
     iconBg: '#F59E0B',
   },
-  bitgirl: {
-    id: 'bitgirl',
-    title: 'Culture Maxi',
-    lore: 'Commands 40,000 followers purely through memes and relentless energy. Up only.',
+  usdc_titan: {
+    id: 'usdc_titan',
+    title: 'USDC Liquidity Titan',
+    lore: 'Trades exclusively on native Circle USDC settlement rails. Zero synthetic wrapped tokens, pure capital efficiency.',
+    rarity: 'LEGENDARY',
+    glowColor: '#8B5CF6',
+    image: '/cards/true_og.png',
+    badgeEmoji: '💎',
+    iconBg: '#8B5CF6',
+  },
+  finalizer: {
+    id: 'finalizer',
+    title: 'Sub-Second Finalizer',
+    lore: 'Settles state transitions in under 400ms. Executes opinions before other L1s can even calculate gas fees.',
+    rarity: 'LEGENDARY',
+    glowColor: '#EF4444',
+    image: '/cards/hater.png',
+    badgeEmoji: '⚡',
+    iconBg: '#EF4444',
+  },
+  navigator: {
+    id: 'navigator',
+    title: 'CCTP Navigator',
+    lore: 'Teleports multi-chain liquidity across Ethereum, Solana, and Arc with zero slippage via native CCTP conduits.',
     rarity: 'EPIC',
+    glowColor: '#EC4899',
+    image: '/cards/kate.png',
+    badgeEmoji: '🌐',
+    iconBg: '#EC4899',
+  },
+  sentinel: {
+    id: 'sentinel',
+    title: 'Deterministic Sentinel',
+    lore: 'Protects the timeline with verifiable metrics and TPS charts. Believes in fast, sub-second deterministic settlement.',
+    rarity: 'RARE',
     glowColor: '#10B981',
     image: '/cards/no_tech.jpg',
-    badgeEmoji: '🎯',
+    badgeEmoji: '🛡️',
     iconBg: '#10B981',
   },
 };
 
 export const ArcCards: React.FC = () => {
-  const [handle, setHandle] = useState('yournahian');
-  const [inputVal, setInputVal] = useState('yournahian');
+  // Free input field by default: empty string
+  const [inputVal, setInputVal] = useState('');
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const [selectedArchetypeId, setSelectedArchetypeId] = useState<string>('pioneer');
   const [isFlipped, setIsFlipped] = useState(true);
   const [downloading, setDownloading] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
+  const [hasGenerated, setHasGenerated] = useState(false);
 
   // 3D tilt
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 });
 
   const fetchUserCard = async (targetHandle: string) => {
+    const clean = targetHandle.replace('@', '').trim();
+    if (!clean) return;
+
     setLoading(true);
+    setHasGenerated(true);
     try {
-      const clean = targetHandle.replace('@', '').trim();
       const res = await fetch(`/api/impressions?handle=${encodeURIComponent(clean)}`);
       const json = await res.json();
       if (json && json.ok) {
@@ -109,22 +114,24 @@ export const ArcCards: React.FC = () => {
           tweets: json.posts || [],
         });
 
-        // Auto-detect archetype based on metrics
+        // Auto-assign archetype based on real stats
         const imps = json.total_impressions || 0;
         if (clean.toLowerCase() === 'yournahian') {
           setSelectedArchetypeId('pioneer');
         } else if (imps > 100000) {
-          setSelectedArchetypeId('true_og');
+          setSelectedArchetypeId('usdc_titan');
         } else if (imps > 50000) {
           setSelectedArchetypeId('architect');
+        } else if (imps > 20000) {
+          setSelectedArchetypeId('finalizer');
         } else {
-          setSelectedArchetypeId('hater');
+          setSelectedArchetypeId('navigator');
         }
       } else {
         setUserData({
           user: { handle: clean, name: clean, profile_image_url: '' },
-          totalImpressions: 24500,
-          totalPosts: 12,
+          totalImpressions: 0,
+          totalPosts: 0,
           tweets: [],
         });
       }
@@ -135,11 +142,7 @@ export const ArcCards: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    fetchUserCard(handle);
-  }, [handle]);
-
-  const archetype = ARCHETYPES[selectedArchetypeId] || ARCHETYPES.pioneer;
+  const archetype = ARC_ARCHETYPES[selectedArchetypeId] || ARC_ARCHETYPES.pioneer;
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (!cardRef.current) return;
@@ -165,19 +168,19 @@ export const ArcCards: React.FC = () => {
   };
 
   const handleDownload = async () => {
-    if (!userData) return;
+    const handleToUse = userData?.user?.handle || (inputVal.trim() ? inputVal.trim() : 'creator');
     setDownloading(true);
     try {
       const blob = await exportArcCardPNG({
-        handle: userData.user.handle,
-        name: userData.user.name,
-        avatar: userData.user.profile_image_url || '',
+        handle: handleToUse,
+        name: userData?.user?.name || handleToUse,
+        avatar: userData?.user?.profile_image_url || '',
         cardImage: archetype.image,
         archetypeId: archetype.id,
         archetypeTitle: archetype.title,
         archetypeLore: archetype.lore,
         rarity: archetype.rarity,
-        impressions: userData.totalImpressions || 0,
+        impressions: userData?.totalImpressions || 0,
         wave: 'WAVE 1 • MAINNET',
         glowColor: archetype.glowColor,
       });
@@ -185,7 +188,7 @@ export const ArcCards: React.FC = () => {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = `${userData.user.handle}-arc-card.png`;
+        a.download = `${handleToUse}-arc-card.png`;
         a.click();
         URL.revokeObjectURL(url);
       }
@@ -197,9 +200,9 @@ export const ArcCards: React.FC = () => {
   };
 
   const handleShareX = () => {
-    if (!userData) return;
+    const handleToUse = userData?.user?.handle || (inputVal.trim() ? inputVal.trim() : 'creator');
     const text = encodeURIComponent(
-      `I unlocked my official @arc Collectible Card: ${archetype.title} (${archetype.rarity})!\n\n⚡ Total Arc Impressions: ${(userData.totalImpressions || 0).toLocaleString()}\n🌊 Wave 1 Genesis\n\nReveal your Arc Card on @ArcTrace:`
+      `I forged my official @arc Collectible Card: ${archetype.badgeEmoji} ${archetype.title} (${archetype.rarity})!\n\n⚡ Total Arc Impressions: ${(userData?.totalImpressions || 0).toLocaleString()}\n🌊 Wave 1 Genesis\n\nForge your Arc Card on @ArcTrace:`
     );
     const url = encodeURIComponent(window.location.href);
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${url}`, '_blank');
@@ -211,14 +214,16 @@ export const ArcCards: React.FC = () => {
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
+  const displayHandle = userData?.user?.handle || (inputVal.trim() ? inputVal.trim() : 'your_handle');
+
   return (
     <div className="monad-style-stage animate-fade-in">
-      {/* Top Search Bar */}
+      {/* Top Search Bar (100% Free, no default name) */}
       <div className="monad-search-container">
         <form
           onSubmit={(e) => {
             e.preventDefault();
-            if (inputVal.trim()) setHandle(inputVal.trim());
+            if (inputVal.trim()) fetchUserCard(inputVal.trim());
           }}
           className="monad-search-form"
         >
@@ -228,23 +233,24 @@ export const ArcCards: React.FC = () => {
               type="text"
               value={inputVal}
               onChange={(e) => setInputVal(e.target.value)}
-              placeholder="enter_twitter_handle"
+              placeholder="Enter your X username to forge card"
               className="monad-input-field"
+              autoFocus
             />
           </div>
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || !inputVal.trim()}
             className="monad-btn-generate"
           >
-            {loading ? 'Generating...' : 'Generate Card'}
+            {loading ? 'Forging...' : 'Forge Card'}
           </button>
         </form>
 
-        {/* Archetype Selector Chips */}
+        {/* Archetype Selector Chips (Original Arc Archetypes) */}
         <div className="monad-chips-row">
-          <span className="chips-label">Preview Archetypes:</span>
-          {Object.values(ARCHETYPES).map((arch) => (
+          <span className="chips-label">Card Archetypes:</span>
+          {Object.values(ARC_ARCHETYPES).map((arch) => (
             <button
               key={arch.id}
               type="button"
@@ -282,7 +288,7 @@ export const ArcCards: React.FC = () => {
                 boxShadow: `0 0 50px ${archetype.glowColor}66, 0 0 100px ${archetype.glowColor}33`,
               }}
             >
-              {/* CARD FRONT (Monad Style High-Fidelity) */}
+              {/* CARD FRONT (Original Arc Aesthetics) */}
               <div
                 className="monad-card-face monad-card-front"
                 style={{
@@ -300,7 +306,7 @@ export const ArcCards: React.FC = () => {
                 {/* Top Nameplate Box */}
                 <div className="monad-card-nameplate">
                   <span className="monad-nameplate-text">
-                    @{userData?.user?.handle || 'creator'}
+                    @{displayHandle}
                   </span>
                   <div
                     className="monad-nameplate-star"
@@ -319,7 +325,7 @@ export const ArcCards: React.FC = () => {
                   />
                 </div>
 
-                {/* Trait Box (Monad Cards Anatomy) */}
+                {/* Trait Box (Original Arc Archetype) */}
                 <div className="monad-trait-card">
                   <div
                     className="monad-trait-icon-box"
@@ -375,7 +381,7 @@ export const ArcCards: React.FC = () => {
             </div>
           </div>
 
-          {/* Floating Action Buttons on Right (Monad Cards exact layout) */}
+          {/* Floating Action Buttons on Right */}
           <div className="monad-floating-actions">
             <button
               type="button"
@@ -416,20 +422,22 @@ export const ArcCards: React.FC = () => {
           </div>
         </div>
 
-        {/* Big Monad Cards Title & Footer Banner (From Screenshot) */}
+        {/* Big Arc Cards Title & Footer Banner */}
         <div className="monad-banner-footer">
           <h1 className="monad-huge-title">ARC CARDS</h1>
           <div className="monad-wave-divider">
             <span className="divider-line" />
-            <span className="divider-text">WAVE 1 — MUTUALS</span>
+            <span className="divider-text">WAVE 1 — GENESIS</span>
             <span className="divider-line" />
           </div>
           <p className="monad-quote-text">
-            &ldquo;A token of appreciation for Crypto Twitter&rdquo;
+            &ldquo;Forged on sub-second finality for the Arc Community&rdquo;
           </p>
-          <div className="monad-signed-in">
-            Signed in as <span className="signed-handle">@{userData?.user?.handle || handle}</span>
-          </div>
+          {hasGenerated && (
+            <div className="monad-signed-in">
+              Forged for <span className="signed-handle">@{displayHandle}</span>
+            </div>
+          )}
 
           <button
             type="button"
@@ -437,7 +445,7 @@ export const ArcCards: React.FC = () => {
             className="monad-claim-button"
             style={{
               boxShadow: `0 0 35px ${archetype.glowColor}88`,
-              background: `linear-gradient(135deg, ${archetype.glowColor}, #6366F1)`,
+              background: `linear-gradient(135deg, ${archetype.glowColor}, #2563EB)`,
             }}
           >
             Claim & Share to X
