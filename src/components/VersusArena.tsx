@@ -1,6 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Swords, Crown, Share2 } from 'lucide-react';
+import { Swords, Crown, Share2, Sparkles, RefreshCw } from 'lucide-react';
 import { TierBadge } from './TierBadge';
+
+const PRESET_MATCHUPS = [
+  { p1: 'yournahian', p2: 'jerallaire', label: '@yournahian vs @jerallaire' },
+  { p1: 'CircleDevs', p2: 'VitalikButerin', label: '@CircleDevs vs @Vitalik' },
+  { p1: 'bobbilee', p2: 'samconnerone', label: '@bobbilee vs @samconnerone' },
+  { p1: 'arc', p2: 'circle', label: '@arc vs @circle' },
+];
 
 export const VersusArena: React.FC = () => {
   const [handle1, setHandle1] = useState('yournahian');
@@ -27,7 +34,11 @@ export const VersusArena: React.FC = () => {
       setUser1Data(
         j1?.ok
           ? {
-              user: { handle: j1.username || clean1, name: j1.profile?.name || clean1, profile_image_url: j1.profile?.avatar || '' },
+              user: {
+                handle: j1.username || clean1,
+                name: j1.profile?.name || clean1,
+                profile_image_url: j1.profile?.avatar || '',
+              },
               totalImpressions: j1.total_impressions || 0,
               totalPosts: j1.post_count || 0,
             }
@@ -41,7 +52,11 @@ export const VersusArena: React.FC = () => {
       setUser2Data(
         j2?.ok
           ? {
-              user: { handle: j2.username || clean2, name: j2.profile?.name || clean2, profile_image_url: j2.profile?.avatar || '' },
+              user: {
+                handle: j2.username || clean2,
+                name: j2.profile?.name || clean2,
+                profile_image_url: j2.profile?.avatar || '',
+              },
               totalImpressions: j2.total_impressions || 0,
               totalPosts: j2.post_count || 0,
             }
@@ -61,6 +76,21 @@ export const VersusArena: React.FC = () => {
   useEffect(() => {
     fetchVersusData(handle1, handle2);
   }, [handle1, handle2]);
+
+  const handleFightSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (input1.trim() && input2.trim()) {
+      setHandle1(input1.trim());
+      setHandle2(input2.trim());
+    }
+  };
+
+  const handleSelectPreset = (p1: string, p2: string) => {
+    setInput1(p1);
+    setInput2(p2);
+    setHandle1(p1);
+    setHandle2(p2);
+  };
 
   const imps1 = user1Data?.totalImpressions || 0;
   const imps2 = user2Data?.totalImpressions || 0;
@@ -88,31 +118,31 @@ export const VersusArena: React.FC = () => {
   };
 
   return (
-    <div className="feature-view-container">
+    <div className="feature-view-container animate-fade-in">
       {/* Title Header */}
       <div className="feature-header-wrap">
         <div className="feature-pill-badge" style={{ color: '#F59E0B', borderColor: 'rgba(245,158,11,0.3)', background: 'rgba(245,158,11,0.08)' }}>
           <Swords style={{ width: '14px', height: '14px' }} />
-          <span>Head-to-Head Arena • Real-Time Metrics</span>
+          <span>Live Creator Showdown • Any 2 Handles</span>
         </div>
         <h2 className="feature-title">
           Arc <span className="gradient-text-amber">Versus</span> Arena
         </h2>
         <p className="feature-desc">
-          Pit two Arc creators or ecosystem leads side-by-side. Compare verified impressions, post velocity, and contributor rank.
+          Compare any two Twitter creators or ecosystem leads side-by-side. Enter any usernames below to calculate live impressions, post volume, and victory crown.
         </p>
 
-        {/* Dual Input Controls */}
-        <div className="versus-controls-bar">
+        {/* Dual Input Controls with Enter Submit */}
+        <form onSubmit={handleFightSubmit} className="versus-controls-bar">
           <div className="feature-input-wrap">
             <span className="feature-input-prefix" style={{ color: '#00E5FF' }}>@</span>
             <input
               type="text"
               value={input1}
               onChange={(e) => setInput1(e.target.value)}
-              placeholder="challenger_1"
+              placeholder="Enter handle 1"
               className="feature-text-input"
-              style={{ borderColor: 'rgba(0,229,255,0.3)' }}
+              style={{ borderColor: 'rgba(0,229,255,0.35)' }}
             />
           </div>
 
@@ -126,25 +156,35 @@ export const VersusArena: React.FC = () => {
               type="text"
               value={input2}
               onChange={(e) => setInput2(e.target.value)}
-              placeholder="challenger_2"
+              placeholder="Enter handle 2"
               className="feature-text-input"
-              style={{ borderColor: 'rgba(249,115,22,0.3)' }}
+              style={{ borderColor: 'rgba(249,115,22,0.35)' }}
             />
           </div>
 
           <button
-            onClick={() => {
-              if (input1.trim() && input2.trim()) {
-                setHandle1(input1.trim());
-                setHandle2(input2.trim());
-              }
-            }}
+            type="submit"
             disabled={loading}
             className="feature-submit-btn"
             style={{ background: 'linear-gradient(135deg, #F59E0B, #F97316)' }}
           >
             {loading ? 'Battling...' : 'Fight!'}
           </button>
+        </form>
+
+        {/* Quick Matchup Presets */}
+        <div className="monad-chips-row" style={{ marginTop: '4px' }}>
+          <span className="chips-label">Popular Battles:</span>
+          {PRESET_MATCHUPS.map((m, i) => (
+            <button
+              key={i}
+              type="button"
+              onClick={() => handleSelectPreset(m.p1, m.p2)}
+              className="monad-chip-btn"
+            >
+              {m.label}
+            </button>
+          ))}
         </div>
       </div>
 

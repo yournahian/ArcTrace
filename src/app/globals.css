@@ -1775,3 +1775,495 @@ html, body {
   margin-top: 4px;
 }
 
+/* ========================================================
+   MONAD-INSPIRED ARC CARDS AUTHENTIC AESTHETICS
+   ======================================================== */
+.monad-style-stage {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px 80px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.monad-search-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  max-width: 580px;
+}
+
+.monad-search-form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.monad-input-pill {
+  position: relative;
+  flex: 1;
+}
+
+.monad-input-prefix {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  color: var(--arc-cyan);
+  font-weight: 700;
+}
+
+.monad-input-field {
+  width: 100%;
+  height: 46px;
+  padding: 0 16px 0 34px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(172, 198, 233, 0.2);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  outline: none;
+  transition: all 0.2s;
+}
+
+.monad-input-field:focus {
+  border-color: var(--arc-cyan);
+  background: rgba(0, 229, 255, 0.05);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+}
+
+.monad-btn-generate {
+  height: 46px;
+  padding: 0 24px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #00E5FF, #2563EB);
+  color: #040814;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.4);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.monad-btn-generate:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(0, 229, 255, 0.6);
+}
+
+.monad-chips-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: 100%;
+}
+
+.chips-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--arc-text-dim);
+  margin-right: 4px;
+}
+
+.monad-chip-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--arc-text-muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.monad-chip-btn:hover {
+  border-color: var(--arc-cyan);
+  color: #FFFFFF;
+}
+
+.monad-chip-btn.active {
+  box-shadow: 0 0 15px rgba(0, 229, 255, 0.3);
+}
+
+.monad-stage-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 32px;
+}
+
+.monad-card-and-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  position: relative;
+}
+
+@media (min-width: 640px) {
+  .monad-card-and-actions {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.monad-perspective-wrapper {
+  perspective: 1200px;
+}
+
+.monad-card-3d {
+  position: relative;
+  width: 340px;
+  height: 540px;
+  border-radius: 28px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s;
+  transform-style: preserve-3d;
+}
+
+.monad-card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  overflow: hidden;
+}
+
+.monad-card-front {
+  background: linear-gradient(160deg, #FFFFFF 0%, #F8FAFC 60%, #F1F5F9 100%);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.monad-holographic-sheen {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  mix-blend-overlay: overlay;
+  opacity: 0.45;
+  border-radius: 28px;
+}
+
+.monad-card-nameplate {
+  height: 44px;
+  border-radius: 12px;
+  background: rgba(15, 23, 42, 0.05);
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.monad-nameplate-text {
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.monad-nameplate-star {
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.monad-art-frame {
+  width: 100%;
+  height: 275px;
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1.5px solid rgba(15, 23, 42, 0.1);
+  margin: 6px 0;
+  background: #000000;
+  box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.monad-art-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.monad-trait-card {
+  min-height: 96px;
+  border-radius: 16px;
+  background: #FFFFFF;
+  border: 1.5px solid rgba(15, 23, 42, 0.12);
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+}
+
+.monad-trait-icon-box {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.monad-trait-icon {
+  font-size: 26px;
+}
+
+.monad-trait-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow: hidden;
+}
+
+.monad-trait-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+  color: #0F172A;
+}
+
+.monad-trait-lore {
+  font-family: var(--font-main);
+  font-size: 11px;
+  color: #475569;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.monad-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2px 4px 0 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.monad-footer-brand {
+  color: #64748B;
+  font-weight: 700;
+}
+
+.monad-wave-badge {
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: #0F172A;
+  color: #FFFFFF;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+/* Card Back */
+.monad-card-back {
+  background: #060914;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  text-align: center;
+  transform: rotateY(180deg);
+}
+
+.monad-back-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 800;
+  color: #00E5FF;
+  letter-spacing: 0.1em;
+}
+
+.monad-back-center-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: auto 0;
+}
+
+.monad-back-emblem {
+  padding: 26px;
+  border-radius: 50%;
+  background: rgba(0, 229, 255, 0.08);
+  border: 1px solid rgba(0, 229, 255, 0.35);
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.monad-back-title {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 0.05em;
+}
+
+.monad-back-subtitle {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 700;
+  color: #00E5FF;
+}
+
+.monad-back-cta {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  background: rgba(0, 229, 255, 0.15);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #00E5FF;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* Floating Action Circle Buttons */
+.monad-floating-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+}
+
+@media (min-width: 640px) {
+  .monad-floating-actions {
+    flex-direction: column;
+    margin-left: 12px;
+  }
+}
+
+.monad-action-circle {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(10, 16, 29, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+
+.monad-action-circle:hover {
+  transform: scale(1.12);
+  border-color: #00E5FF;
+  color: #00E5FF;
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
+}
+
+/* Big Monad Cards Title Banner Below Card */
+.monad-banner-footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+  margin-top: 10px;
+}
+
+.monad-huge-title {
+  font-family: var(--font-display);
+  font-size: 52px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-shadow: 0 0 35px rgba(168, 85, 247, 0.5);
+}
+
+.monad-wave-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.divider-line {
+  width: 40px;
+  height: 2px;
+  background: #A855F7;
+  opacity: 0.6;
+}
+
+.divider-text {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  color: #C084FC;
+  letter-spacing: 0.12em;
+}
+
+.monad-quote-text {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--arc-text-muted);
+  margin: 0;
+}
+
+.monad-signed-in {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--arc-text-dim);
+}
+
+.signed-handle {
+  color: #00E5FF;
+  font-weight: 700;
+}
+
+.monad-claim-button {
+  height: 44px;
+  padding: 0 36px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  color: #FFFFFF;
+  border: none;
+  cursor: pointer;
+  margin-top: 6px;
+  transition: transform 0.2s;
+}
+
+.monad-claim-button:hover {
+  transform: translateY(-2px);
+}
+
+

@@ -1,7 +1,8 @@
-﻿export interface ArcCardExportData {
+export interface ArcCardExportData {
   handle: string;
   name: string;
   avatar: string;
+  cardImage?: string;
   archetypeId: string;
   archetypeTitle: string;
   archetypeLore: string;
@@ -27,217 +28,191 @@ export async function exportArcCardPNG(data: ArcCardExportData): Promise<Blob | 
   ctx.fillRect(0, 0, width, height);
 
   // Holographic outer border glow
-  const glowGrad = ctx.createLinearGradient(0, 0, width, height);
-  glowGrad.addColorStop(0, data.glowColor || '#00E5FF');
-  glowGrad.addColorStop(0.5, '#A855F7');
-  glowGrad.addColorStop(1, '#3B82F6');
-
-  // Outer frame
-  const cx = 30;
-  const cy = 30;
-  const cw = width - 60;
-  const ch = height - 60;
-  const cr = 28;
+  const cx = 35;
+  const cy = 35;
+  const cw = width - 70;
+  const ch = height - 70;
+  const cr = 32;
 
   ctx.save();
-  ctx.strokeStyle = glowGrad;
-  ctx.lineWidth = 6;
-  ctx.shadowColor = data.glowColor || 'rgba(0, 229, 255, 0.5)';
-  ctx.shadowBlur = 30;
+  ctx.strokeStyle = data.glowColor || '#00E5FF';
+  ctx.lineWidth = 8;
+  ctx.shadowColor = data.glowColor || 'rgba(0, 229, 255, 0.6)';
+  ctx.shadowBlur = 35;
   ctx.beginPath();
   ctx.roundRect(cx, cy, cw, ch, cr);
   ctx.stroke();
   ctx.restore();
 
-  // Card Inner Background
+  // Card Inner Background (White / Light Holographic surface like Monad Cards)
   ctx.save();
   ctx.beginPath();
-  ctx.roundRect(cx + 3, cy + 3, cw - 6, ch - 6, cr - 3);
+  ctx.roundRect(cx + 4, cy + 4, cw - 8, ch - 8, cr - 4);
   ctx.clip();
 
-  const innerGrad = ctx.createLinearGradient(0, 0, 0, height);
-  innerGrad.addColorStop(0, '#0F172A');
-  innerGrad.addColorStop(0.5, '#090E1A');
-  innerGrad.addColorStop(1, '#05070D');
-  ctx.fillStyle = innerGrad;
+  // Crisp Monad-style white/silvery holographic surface
+  const surfaceGrad = ctx.createLinearGradient(cx, cy, cx + cw, cy + ch);
+  surfaceGrad.addColorStop(0, '#FFFFFF');
+  surfaceGrad.addColorStop(0.5, '#F8FAFC');
+  surfaceGrad.addColorStop(1, '#F1F5F9');
+  ctx.fillStyle = surfaceGrad;
   ctx.fillRect(cx, cy, cw, ch);
 
-  // Arc Grid Pattern
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-  ctx.lineWidth = 1;
-  const gridSize = 32;
-  for (let x = cx; x <= cx + cw; x += gridSize) {
-    ctx.beginPath();
-    ctx.moveTo(x, cy);
-    ctx.lineTo(x, cy + ch);
-    ctx.stroke();
-  }
-  for (let y = cy; y <= cy + ch; y += gridSize) {
-    ctx.beginPath();
-    ctx.moveTo(cx, y);
-    ctx.lineTo(cx + cw, y);
-    ctx.stroke();
-  }
-
-  // Header Box
+  // Nameplate Pill Box (Top)
   const hbx = cx + 24;
   const hby = cy + 24;
   const hbw = cw - 48;
-  const hbh = 52;
-  ctx.fillStyle = 'rgba(255, 255, 255, 0.06)';
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-  ctx.lineWidth = 1;
+  const hbh = 54;
+
+  ctx.fillStyle = 'rgba(15, 23, 42, 0.06)';
+  ctx.strokeStyle = 'rgba(15, 23, 42, 0.12)';
+  ctx.lineWidth = 1.5;
   ctx.beginPath();
   ctx.roundRect(hbx, hby, hbw, hbh, 14);
   ctx.fill();
   ctx.stroke();
 
-  ctx.font = '700 20px " Space Grotesk\, sans-serif';
- ctx.fillStyle = '#FFFFFF';
- ctx.textBaseline = 'middle';
- const cleanHandle = data.handle.startsWith('@') ? data.handle : '@' + data.handle;
- ctx.fillText(cleanHandle, hbx + 18, hby + hbh / 2);
+  ctx.font = '800 22px "Space Grotesk", sans-serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.textBaseline = 'middle';
+  const cleanHandle = data.handle.startsWith('@') ? data.handle : '@' + data.handle;
+  ctx.fillText(cleanHandle, hbx + 18, hby + hbh / 2);
 
- ctx.font = '700 16px \Space Mono\, monospace';
- ctx.fillStyle = data.glowColor || '#00E5FF';
- ctx.textAlign = 'right';
- ctx.fillText('✦ ' + data.rarity, hbx + hbw - 18, hby + hbh / 2);
- ctx.textAlign = 'left';
+  // Top Right Star / Diamond
+  ctx.font = '700 20px "Space Mono", monospace';
+  ctx.fillStyle = data.glowColor || '#3B82F6';
+  ctx.textAlign = 'right';
+  ctx.fillText('✦', hbx + hbw - 18, hby + hbh / 2);
+  ctx.textAlign = 'left';
 
- // Center Art Frame
- const artx = cx + 24;
- const arty = hby + hbh + 18;
- const artw = cw - 48;
- const arth = 380;
+  // Center Character Artwork Frame
+  const artx = cx + 24;
+  const arty = hby + hbh + 18;
+  const artw = cw - 48;
+  const arth = 420;
 
- ctx.save();
- ctx.beginPath();
- ctx.roundRect(artx, arty, artw, arth, 18);
- ctx.clip();
+  ctx.save();
+  ctx.beginPath();
+  ctx.roundRect(artx, arty, artw, arth, 18);
+  ctx.clip();
 
- const artGrad = ctx.createLinearGradient(artx, arty, artx + artw, arty + arth);
- artGrad.addColorStop(0, '#1E1B4B');
- artGrad.addColorStop(0.5, '#0F172A');
- artGrad.addColorStop(1, '#0A0F1D');
- ctx.fillStyle = artGrad;
- ctx.fillRect(artx, arty, artw, arth);
+  // Try drawing the high-res card artwork image
+  let imageDrawn = false;
+  if (data.cardImage) {
+    try {
+      const artImg = new Image();
+      artImg.crossOrigin = 'anonymous';
+      artImg.src = data.cardImage;
+      await new Promise((resolve) => {
+        artImg.onload = resolve;
+        artImg.onerror = resolve;
+      });
+      if (artImg.complete && artImg.naturalWidth > 0) {
+        ctx.drawImage(artImg, artx, arty, artw, arth);
+        imageDrawn = true;
+      }
+    } catch (e) {
+      console.warn('Card image error:', e);
+    }
+  }
 
- // Avatar drawing
- try {
- const img = new Image();
- img.crossOrigin = 'anonymous';
- img.src = data.avatar;
- await new Promise((resolve) => {
- img.onload = resolve;
- img.onerror = resolve;
- });
- if (img.complete && img.naturalWidth > 0) {
- const imgSize = 220;
- const ix = artx + (artw - imgSize) / 2;
- const iy = arty + (arth - imgSize) / 2 - 10;
- ctx.save();
- ctx.beginPath();
- ctx.arc(ix + imgSize / 2, iy + imgSize / 2, imgSize / 2, 0, Math.PI * 2);
- ctx.clip();
- ctx.drawImage(img, ix, iy, imgSize, imgSize);
- ctx.restore();
+  // Fallback if card image not loaded
+  if (!imageDrawn) {
+    const fallbackGrad = ctx.createLinearGradient(artx, arty, artx + artw, arty + arth);
+    fallbackGrad.addColorStop(0, '#1E1B4B');
+    fallbackGrad.addColorStop(1, '#0F172A');
+    ctx.fillStyle = fallbackGrad;
+    ctx.fillRect(artx, arty, artw, arth);
+  }
 
- ctx.strokeStyle = data.glowColor || '#00E5FF';
- ctx.lineWidth = 4;
- ctx.beginPath();
- ctx.arc(ix + imgSize / 2, iy + imgSize / 2, imgSize / 2, 0, Math.PI * 2);
- ctx.stroke();
- }
- } catch (e) {
- console.warn('Image load error:', e);
- }
+  ctx.restore();
 
- // Holographic sheen
- const sheenGrad = ctx.createLinearGradient(artx, arty, artx + artw, arty);
- sheenGrad.addColorStop(0, 'rgba(255, 255, 255, 0.04)');
- sheenGrad.addColorStop(0.5, 'rgba(0, 229, 255, 0.15)');
- sheenGrad.addColorStop(1, 'rgba(255, 255, 255, 0.04)');
- ctx.fillStyle = sheenGrad;
- ctx.fillRect(artx, arty, artw, arth);
+  ctx.strokeStyle = 'rgba(15, 23, 42, 0.12)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.roundRect(artx, arty, artw, arth, 18);
+  ctx.stroke();
 
- ctx.restore();
+  // Trait Box (Monad Cards Style)
+  const tbx = cx + 24;
+  const tby = arty + arth + 18;
+  const tbw = cw - 48;
+  const tbh = 126;
 
- ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
- ctx.lineWidth = 1.5;
- ctx.beginPath();
- ctx.roundRect(artx, arty, artw, arth, 18);
- ctx.stroke();
+  ctx.fillStyle = '#FFFFFF';
+  ctx.strokeStyle = 'rgba(15, 23, 42, 0.1)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.roundRect(tbx, tby, tbw, tbh, 16);
+  ctx.fill();
+  ctx.stroke();
 
- // Trait Box (Bottom Section)
- const tbx = cx + 24;
- const tby = arty + arth + 20;
- const tbw = cw - 48;
- const tbh = 140;
+  // Trait Icon Badge (Left Square)
+  const iconSize = 64;
+  const ix = tbx + 14;
+  const iy = tby + 16;
+  ctx.fillStyle = data.glowColor || '#A855F7';
+  ctx.beginPath();
+  ctx.roundRect(ix, iy, iconSize, iconSize, 14);
+  ctx.fill();
 
- ctx.fillStyle = 'rgba(255, 255, 255, 0.04)';
- ctx.strokeStyle = 'rgba(255, 255, 255, 0.12)';
- ctx.lineWidth = 1;
- ctx.beginPath();
- ctx.roundRect(tbx, tby, tbw, tbh, 18);
- ctx.fill();
- ctx.stroke();
+  ctx.font = '32px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#FFFFFF';
+  const badgeEmoji = data.archetypeId === 'hater' ? '👊' : data.archetypeId === 'true_og' ? '👑' : data.archetypeId === 'architect' ? '⚙️' : data.archetypeId === 'pioneer' ? '🚀' : '🎯';
+  ctx.fillText(badgeEmoji, ix + iconSize / 2, iy + iconSize / 2);
+  ctx.textAlign = 'left';
 
- // Trait Badge Icon
- const icx = tbx + 18;
- const icy = tby + 20;
- const icSize = 56;
- const badgeGrad = ctx.createLinearGradient(icx, icy, icx + icSize, icy + icSize);
- badgeGrad.addColorStop(0, data.glowColor || '#00E5FF');
- badgeGrad.addColorStop(1, '#3B82F6');
+  // Trait Text Content
+  const textLeft = ix + iconSize + 16;
+  ctx.font = '800 18px "Space Grotesk", sans-serif';
+  ctx.fillStyle = '#0F172A';
+  ctx.textBaseline = 'top';
+  ctx.fillText(data.archetypeTitle, textLeft, iy + 2);
 
- ctx.fillStyle = badgeGrad;
- ctx.beginPath();
- ctx.roundRect(icx, icy, icSize, icSize, 14);
- ctx.fill();
+  ctx.font = '500 13px "DM Sans", sans-serif';
+  ctx.fillStyle = '#475569';
+  
+  // Wrap lore text into lines
+  const words = data.archetypeLore.split(' ');
+  let line = '';
+  let lineY = iy + 26;
+  for (let n = 0; n < words.length; n++) {
+    const testLine = line + words[n] + ' ';
+    const metrics = ctx.measureText(testLine);
+    if (metrics.width > tbw - iconSize - 60 && n > 0) {
+      ctx.fillText(line, textLeft, lineY);
+      line = words[n] + ' ';
+      lineY += 18;
+    } else {
+      line = testLine;
+    }
+  }
+  ctx.fillText(line, textLeft, lineY);
 
- ctx.font = '700 24px \Space Grotesk\, sans-serif';
- ctx.fillStyle = '#060913';
- ctx.textAlign = 'center';
- ctx.textBaseline = 'middle';
- ctx.fillText(data.archetypeTitle.charAt(0), icx + icSize / 2, icy + icSize / 2);
- ctx.textAlign = 'left';
+  // Footer: Arc Cards & Wave A
+  ctx.font = '700 11px "Space Mono", monospace';
+  ctx.fillStyle = '#64748B';
+  ctx.fillText('Arc Cards', cx + 28, cy + ch - 16);
 
- // Archetype Title
- ctx.font = '700 20px \Space Grotesk\, sans-serif';
- ctx.fillStyle = '#FFFFFF';
- ctx.fillText(data.archetypeTitle, icx + icSize + 16, icy + 16);
+  // Wave Stamp Badge
+  const wx = cx + cw - 44;
+  const wy = cy + ch - 22;
+  ctx.beginPath();
+  ctx.arc(wx, wy, 14, 0, Math.PI * 2);
+  ctx.fillStyle = '#0F172A';
+  ctx.fill();
 
- // Archetype Lore Text
- ctx.font = '400 13px \DM Sans\, sans-serif';
- ctx.fillStyle = '#94A3B8';
- const words = data.archetypeLore.split(' ');
- let line = '';
- let ly = icy + 40;
- for (const n of words) {
- const testLine = line + n + ' ';
- const metrics = ctx.measureText(testLine);
- if (metrics.width > tbw - icSize - 40 && line !== '') {
- ctx.fillText(line, icx + icSize + 16, ly);
- line = n + ' ';
- ly += 18;
- } else {
- line = testLine;
- }
- }
- ctx.fillText(line, icx + icSize + 16, ly);
+  ctx.font = '800 10px "Space Mono", monospace';
+  ctx.fillStyle = '#FFFFFF';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('W1', wx, wy);
 
- // Footer: Arc Cards & Wave Stamp
- ctx.font = '600 12px \Space Mono\, monospace';
- ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
- ctx.fillText('ARC CARDS • PROOF OF WORK', cx + 24, cy + ch - 18);
+  ctx.restore();
 
- ctx.textAlign = 'right';
- ctx.fillStyle = data.glowColor || '#00E5FF';
- ctx.fillText(data.wave || 'WAVE 1 • MAINNET', cx + cw - 24, cy + ch - 18);
-
- ctx.restore();
-
- return new Promise((resolve) => {
- canvas.toBlob((blob) => resolve(blob), 'image/png');
- });
+  return new Promise((resolve) => {
+    canvas.toBlob((blob) => resolve(blob), 'image/png');
+  });
 }
