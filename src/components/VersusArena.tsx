@@ -24,7 +24,6 @@ export const VersusArena: React.FC = () => {
     if (!clean1 || !clean2) return;
 
     setLoading(true);
-    setHasBattled(true);
     try {
       const [res1, res2] = await Promise.all([
         fetch(`/api/impressions?handle=${encodeURIComponent(clean1)}`),
@@ -68,6 +67,7 @@ export const VersusArena: React.FC = () => {
               totalPosts: 0,
             }
       );
+      setHasBattled(true);
     } catch (e) {
       console.error(e);
     } finally {
@@ -85,7 +85,7 @@ export const VersusArena: React.FC = () => {
   const handleSelectPreset = (p1: string, p2: string) => {
     setInput1(p1);
     setInput2(p2);
-    fetchVersusData(p1, p2);
+    // Fill the inputs ONLY — do not auto-battle so the user can review and click Fight!
   };
 
   const imps1 = user1Data?.totalImpressions || 0;
@@ -163,9 +163,28 @@ export const VersusArena: React.FC = () => {
             type="submit"
             disabled={loading || !input1.trim() || !input2.trim()}
             className="feature-submit-btn"
-            style={{ background: 'linear-gradient(135deg, #F59E0B, #F97316)' }}
+            style={{
+              background: loading
+                ? 'rgba(245, 158, 11, 0.4)'
+                : !input1.trim() || !input2.trim()
+                ? 'rgba(255, 255, 255, 0.08)'
+                : 'linear-gradient(135deg, #F59E0B, #F97316)',
+              cursor: loading || !input1.trim() || !input2.trim() ? 'not-allowed' : 'pointer',
+              minWidth: '150px',
+            }}
           >
-            {loading ? 'Battling...' : 'Fight!'}
+            {loading ? (
+              <span style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}>
+                <Swords style={{ width: '16px', height: '16px', animation: 'spin 1s linear infinite' }} />
+                <span>Battling...</span>
+              </span>
+            ) : !input1.trim() || !input2.trim() ? (
+              'Enter 2 Handles'
+            ) : hasBattled ? (
+              '⚔️ Rematch!'
+            ) : (
+              '⚔️ Fight!'
+            )}
           </button>
         </form>
 
@@ -206,17 +225,33 @@ export const VersusArena: React.FC = () => {
               {user1Data?.user?.profile_image_url ? (
                 <img src={user1Data.user.profile_image_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                user1Data?.user?.handle ? user1Data.user.handle.slice(0, 2).toUpperCase() : '?'
+                user1Data?.user?.handle
+                  ? user1Data.user.handle.slice(0, 2).toUpperCase()
+                  : input1.trim()
+                  ? input1.replace('@', '').trim().slice(0, 2).toUpperCase()
+                  : '?'
               )}
             </div>
             <div className="versus-profile-meta">
               <h3 className="versus-handle-heading">
-                {user1Data?.user?.handle ? `@${user1Data.user.handle}` : 'Challenger #1'}
+                {user1Data?.user?.handle
+                  ? `@${user1Data.user.handle}`
+                  : input1.trim()
+                  ? `@${input1.replace('@', '').trim()}`
+                  : 'Challenger #1'}
               </h3>
               <p className="versus-name-sub">
-                {user1Data?.user?.name || (hasBattled ? 'Ready' : 'Enter username above')}
+                {loading
+                  ? '⚡ Analyzing Arc metrics...'
+                  : user1Data?.user?.name
+                  ? user1Data.user.name
+                  : hasBattled
+                  ? 'Ready'
+                  : input1.trim()
+                  ? 'Ready for battle'
+                  : 'Enter handle above'}
               </p>
-              {hasBattled && (
+              {hasBattled && !loading && (
                 <div style={{ marginTop: '4px' }}>
                   <TierBadge impressions={imps1} />
                 </div>
@@ -229,13 +264,13 @@ export const VersusArena: React.FC = () => {
             <div className="versus-metric-box">
               <div className="versus-metric-label">Total Impressions</div>
               <div className="versus-metric-value cyan">
-                {hasBattled ? imps1.toLocaleString() : '—'}
+                {loading ? '...' : hasBattled ? imps1.toLocaleString() : '—'}
               </div>
             </div>
             <div className="versus-metric-box">
               <div className="versus-metric-label">Arc Posts</div>
               <div className="versus-metric-value">
-                {hasBattled ? posts1.toLocaleString() : '—'}
+                {loading ? '...' : hasBattled ? posts1.toLocaleString() : '—'}
               </div>
             </div>
           </div>
@@ -266,17 +301,33 @@ export const VersusArena: React.FC = () => {
               {user2Data?.user?.profile_image_url ? (
                 <img src={user2Data.user.profile_image_url} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               ) : (
-                user2Data?.user?.handle ? user2Data.user.handle.slice(0, 2).toUpperCase() : '?'
+                user2Data?.user?.handle
+                  ? user2Data.user.handle.slice(0, 2).toUpperCase()
+                  : input2.trim()
+                  ? input2.replace('@', '').trim().slice(0, 2).toUpperCase()
+                  : '?'
               )}
             </div>
             <div className="versus-profile-meta">
               <h3 className="versus-handle-heading">
-                {user2Data?.user?.handle ? `@${user2Data.user.handle}` : 'Challenger #2'}
+                {user2Data?.user?.handle
+                  ? `@${user2Data.user.handle}`
+                  : input2.trim()
+                  ? `@${input2.replace('@', '').trim()}`
+                  : 'Challenger #2'}
               </h3>
               <p className="versus-name-sub">
-                {user2Data?.user?.name || (hasBattled ? 'Ready' : 'Enter username above')}
+                {loading
+                  ? '⚡ Analyzing Arc metrics...'
+                  : user2Data?.user?.name
+                  ? user2Data.user.name
+                  : hasBattled
+                  ? 'Ready'
+                  : input2.trim()
+                  ? 'Ready for battle'
+                  : 'Enter handle above'}
               </p>
-              {hasBattled && (
+              {hasBattled && !loading && (
                 <div style={{ marginTop: '4px' }}>
                   <TierBadge impressions={imps2} />
                 </div>
@@ -289,13 +340,13 @@ export const VersusArena: React.FC = () => {
             <div className="versus-metric-box">
               <div className="versus-metric-label">Total Impressions</div>
               <div className="versus-metric-value orange">
-                {hasBattled ? imps2.toLocaleString() : '—'}
+                {loading ? '...' : hasBattled ? imps2.toLocaleString() : '—'}
               </div>
             </div>
             <div className="versus-metric-box">
               <div className="versus-metric-label">Arc Posts</div>
               <div className="versus-metric-value">
-                {hasBattled ? posts2.toLocaleString() : '—'}
+                {loading ? '...' : hasBattled ? posts2.toLocaleString() : '—'}
               </div>
             </div>
           </div>
