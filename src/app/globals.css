@@ -1544,7 +1544,125 @@ body {
 .versus-bar-fill {
   height: 100%;
   border-radius: 9999px;
-  transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Versus Arena Dynamic Battling & Reveal Animations */
+.versus-card-shell.is-battling-cyan {
+  border-color: #00E5FF !important;
+  box-shadow: 0 0 45px rgba(0, 229, 255, 0.5), inset 0 0 30px rgba(0, 229, 255, 0.12) !important;
+  animation: battleCardPulseCyan 0.7s ease-in-out infinite alternate;
+}
+
+.versus-card-shell.is-battling-orange {
+  border-color: #F97316 !important;
+  box-shadow: 0 0 45px rgba(249, 115, 22, 0.5), inset 0 0 30px rgba(249, 115, 22, 0.12) !important;
+  animation: battleCardPulseOrange 0.7s ease-in-out infinite alternate;
+}
+
+@keyframes battleCardPulseCyan {
+  0% { transform: scale(1) translateY(0); filter: brightness(1); }
+  50% { transform: scale(1.015) translateY(-3px); filter: brightness(1.25); }
+  100% { transform: scale(1.01) translateY(1px); filter: brightness(1.1); }
+}
+
+@keyframes battleCardPulseOrange {
+  0% { transform: scale(1) translateY(0); filter: brightness(1); }
+  50% { transform: scale(1.015) translateY(-3px); filter: brightness(1.25); }
+  100% { transform: scale(1.01) translateY(1px); filter: brightness(1.1); }
+}
+
+.versus-center-badge.is-battling {
+  display: flex !important;
+  animation: battleVsClash 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite !important;
+  box-shadow: 0 0 45px rgba(245, 158, 11, 0.8), 0 0 90px rgba(0, 229, 255, 0.6) !important;
+  border-color: #00E5FF !important;
+  background: radial-gradient(circle, #2563EB 0%, #060913 70%) !important;
+}
+
+@keyframes battleVsClash {
+  0% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+  25% { transform: translate(-50%, -50%) scale(1.28) rotate(-10deg); }
+  50% { transform: translate(-50%, -50%) scale(1.12) rotate(10deg); }
+  75% { transform: translate(-50%, -50%) scale(1.26) rotate(-5deg); }
+  100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
+}
+
+.battle-ticker-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  background: rgba(10, 18, 36, 0.9);
+  border: 1px solid rgba(245, 158, 11, 0.45);
+  box-shadow: 0 0 35px rgba(245, 158, 11, 0.25);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  color: #F59E0B;
+  animation: pulseTicker 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes pulseTicker {
+  0% { transform: scale(0.99); opacity: 0.9; }
+  100% { transform: scale(1.02); opacity: 1; box-shadow: 0 0 45px rgba(245, 158, 11, 0.5); }
+}
+
+.versus-victor-pill {
+  animation: crownDropBounce 0.65s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes crownDropBounce {
+  0% { transform: translateY(-24px) scale(0.6); opacity: 0; }
+  60% { transform: translateY(3px) scale(1.12); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+.versus-card-shell.victor-celebrate-cyan {
+  transform: translateY(-8px) scale(1.025);
+  border-color: #00E5FF !important;
+  box-shadow: 0 0 65px rgba(0, 229, 255, 0.5) !important;
+  animation: victorGlowPulseCyan 2s infinite alternate;
+}
+
+.versus-card-shell.victor-celebrate-orange {
+  transform: translateY(-8px) scale(1.025);
+  border-color: #F97316 !important;
+  box-shadow: 0 0 65px rgba(249, 115, 22, 0.5) !important;
+  animation: victorGlowPulseOrange 2s infinite alternate;
+}
+
+@keyframes victorGlowPulseCyan {
+  0% { box-shadow: 0 0 45px rgba(0, 229, 255, 0.35); }
+  100% { box-shadow: 0 0 85px rgba(0, 229, 255, 0.7); }
+}
+
+@keyframes victorGlowPulseOrange {
+  0% { box-shadow: 0 0 45px rgba(249, 115, 22, 0.35); }
+  100% { box-shadow: 0 0 85px rgba(249, 115, 22, 0.7); }
+}
+
+.versus-card-shell.loser-dim {
+  opacity: 0.72;
+  transform: scale(0.98);
+  filter: grayscale(0.25);
+}
+
+.battle-flash-overlay {
+  position: absolute;
+  inset: -30px;
+  border-radius: 36px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.98) 0%, rgba(245, 158, 11, 0.8) 35%, rgba(0, 229, 255, 0.5) 60%, transparent 80%);
+  pointer-events: none;
+  z-index: 60;
+  animation: battleFlashPop 0.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes battleFlashPop {
+  0% { opacity: 1; transform: scale(0.85); }
+  100% { opacity: 0; transform: scale(1.18); }
 }
 
 /* ========================================================
