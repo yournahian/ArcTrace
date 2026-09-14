@@ -3,6 +3,9 @@
 import React, { useState } from 'react';
 import { NavigationDock, TabType } from '@/components/NavigationDock';
 import { ProofOfWork } from '@/components/ProofOfWork';
+import { ArcCards } from '@/components/ArcCards';
+import { VersusArena } from '@/components/VersusArena';
+import { MainnetRadar } from '@/components/MainnetRadar';
 import { ArcGems } from '@/components/ArcGems';
 import { TopArcPosts } from '@/components/TopArcPosts';
 import { ArcLogo } from '@/components/ArcLogo';
@@ -20,7 +23,7 @@ export default function HomePage() {
       <header className="app-header">
         <div className="brand-link">
           <div className="brand-badge">
-            <ArcLogo size={24} color="#2563EB" />
+            <ArcLogo size={24} color="#00E5FF" />
             <span className="brand-name">ArcTrace</span>
             <span className="brand-pill">Network</span>
           </div>
@@ -46,6 +49,9 @@ export default function HomePage() {
       {/* Main Interactive Stage */}
       <main className="main-stage">
         {activeTab === 'proof' && <ProofOfWork />}
+        {activeTab === 'cards' && <ArcCards />}
+        {activeTab === 'versus' && <VersusArena />}
+        {activeTab === 'radar' && <MainnetRadar />}
         {activeTab === 'terminal' && <ArcGems />}
         {activeTab === 'best_posts' && <TopArcPosts />}
       </main>

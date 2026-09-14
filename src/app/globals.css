@@ -680,3 +680,17 @@ html, body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* 3D Card Perspective and Flip Utilities */
+.perspective-1000 {
+  perspective: 1200px;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}

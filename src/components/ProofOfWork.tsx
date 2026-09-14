@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { generateProofOfWorkPNG } from './CardCanvasExporter';
 import { ArcLogo } from './ArcLogo';
+import { TierBadge } from './TierBadge';
 
 interface ProfileData {
   name: string;
@@ -293,8 +294,11 @@ export const ProofOfWork: React.FC = () => {
                 </div>
               </div>
 
-              <div className="arc-target-tag">
-                <span>arc</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <TierBadge impressions={data.total_impressions} />
+                <div className="arc-target-tag">
+                  <span>arc</span>
+                </div>
               </div>
             </div>
 
