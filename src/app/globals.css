@@ -2264,5 +2264,157 @@ html, body {
   transform: translateY(-2px);
 }
 
+/* Ambient Spotlight Beams (Arc Mystery Stage) */
+.card-spotlight-backdrop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 700px;
+  height: 700px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.55;
+  transition: opacity 0.5s ease;
+}
 
+.card-spotlight-backdrop.charging {
+  opacity: 1;
+  animation: pulseBeams 0.4s infinite alternate;
+}
 
+.card-beam {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 900px;
+  height: 80px;
+  transform-origin: 0% 50%;
+  background: linear-gradient(90deg, rgba(0, 229, 255, 0.4) 0%, rgba(99, 102, 241, 0.15) 45%, transparent 85%);
+  filter: blur(14px);
+}
+
+.card-beam:nth-child(1) { transform: translateY(-50%) rotate(25deg); }
+.card-beam:nth-child(2) { transform: translateY(-50%) rotate(75deg); }
+.card-beam:nth-child(3) { transform: translateY(-50%) rotate(125deg); }
+.card-beam:nth-child(4) { transform: translateY(-50%) rotate(205deg); }
+.card-beam:nth-child(5) { transform: translateY(-50%) rotate(255deg); }
+.card-beam:nth-child(6) { transform: translateY(-50%) rotate(305deg); }
+
+@keyframes pulseBeams {
+  0% { transform: translate(-50%, -50%) scale(0.95); filter: brightness(1); }
+  100% { transform: translate(-50%, -50%) scale(1.18); filter: brightness(1.8); }
+}
+
+/* Card Opening Sequence Classes */
+.monad-card-3d.card-is-charging {
+  animation: cardChargeShake 0.65s cubic-bezier(0.36, 0.07, 0.19, 0.97) infinite !important;
+}
+
+@keyframes cardChargeShake {
+  0% { transform: scale(1.03) translate(0, 0); }
+  20% { transform: scale(1.05) translate(-3px, 2px) rotate(-1deg); }
+  40% { transform: scale(1.06) translate(3px, -2px) rotate(1.5deg); }
+  60% { transform: scale(1.07) translate(-4px, -1px) rotate(-1.5deg); }
+  80% { transform: scale(1.08) translate(4px, 2px) rotate(1deg); }
+  100% { transform: scale(1.08) translate(0, 0); }
+}
+
+.monad-card-3d.card-is-spinning {
+  animation: cardSpinReveal 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) forwards !important;
+}
+
+@keyframes cardSpinReveal {
+  0% {
+    transform: scale(1.08) rotateY(180deg) rotateZ(0deg);
+  }
+  50% {
+    transform: scale(1.22) rotateY(540deg) rotateZ(4deg);
+    box-shadow: 0 0 140px rgba(0, 229, 255, 0.9), 0 0 80px rgba(255, 255, 255, 0.8);
+  }
+  100% {
+    transform: scale(1) rotateY(720deg) rotateZ(0deg);
+  }
+}
+
+.monad-card-3d.card-just-revealed {
+  animation: cardRevealPop 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+@keyframes cardRevealPop {
+  0% {
+    transform: scale(1.16);
+    filter: brightness(1.7);
+  }
+  50% {
+    transform: scale(0.98);
+    filter: brightness(1.15);
+  }
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+}
+
+/* Flash burst overlay on reveal */
+.card-flash-burst {
+  position: absolute;
+  inset: -40px;
+  border-radius: 36px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(0, 229, 255, 0.75) 45%, transparent 75%);
+  pointer-events: none;
+  z-index: 30;
+  animation: flashFadeOut 0.75s ease-out forwards;
+}
+
+@keyframes flashFadeOut {
+  0% { opacity: 1; transform: scale(0.7); }
+  50% { opacity: 0.9; transform: scale(1.15); }
+  100% { opacity: 0; transform: scale(1.35); }
+}
+
+/* Unrevealed Floating Badge / Banner */
+.unrevealed-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1px solid rgba(0, 229, 255, 0.4);
+  color: #00E5FF;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  animation: pulseBadge 1.8s infinite ease-in-out;
+}
+
+@keyframes pulseBadge {
+  0%, 100% { transform: scale(1); box-shadow: 0 0 10px rgba(0, 229, 255, 0.2); }
+  50% { transform: scale(1.04); box-shadow: 0 0 25px rgba(0, 229, 255, 0.5); }
+}
+
+.replay-reveal-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 22px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.replay-reveal-btn:hover {
+  background: rgba(0, 229, 255, 0.15);
+  border-color: #00E5FF;
+  color: #00E5FF;
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
+}

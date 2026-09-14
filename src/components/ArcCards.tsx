@@ -14,7 +14,7 @@ export interface CardArchetype {
   iconBg: string;
 }
 
-// 100% Original Arc Network Archetypes (No Monad copies)
+// 100% Original Arc Network Archetypes with high-res character illustrations
 export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
   pioneer: {
     id: 'pioneer',
@@ -42,7 +42,7 @@ export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
     lore: 'Trades exclusively on native Circle USDC settlement rails. Zero synthetic wrapped tokens, pure capital efficiency.',
     rarity: 'LEGENDARY',
     glowColor: '#8B5CF6',
-    image: '/cards/true_og.png',
+    image: '/cards/usdc_titan.png',
     badgeEmoji: '💎',
     iconBg: '#8B5CF6',
   },
@@ -52,7 +52,7 @@ export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
     lore: 'Settles state transitions in under 400ms. Executes opinions before other L1s can even calculate gas fees.',
     rarity: 'LEGENDARY',
     glowColor: '#EF4444',
-    image: '/cards/hater.png',
+    image: '/cards/finalizer.png',
     badgeEmoji: '⚡',
     iconBg: '#EF4444',
   },
@@ -62,7 +62,7 @@ export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
     lore: 'Teleports multi-chain liquidity across Ethereum, Solana, and Arc with zero slippage via native CCTP conduits.',
     rarity: 'EPIC',
     glowColor: '#EC4899',
-    image: '/cards/kate.png',
+    image: '/cards/navigator.png',
     badgeEmoji: '🌐',
     iconBg: '#EC4899',
   },
@@ -84,24 +84,51 @@ export const ArcCards: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const [selectedArchetypeId, setSelectedArchetypeId] = useState<string>('pioneer');
-  const [isFlipped, setIsFlipped] = useState(true);
+  // Starts with card back showing (unrevealed pack) so user experiences the opening animation!
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [openingStage, setOpeningStage] = useState<'idle' | 'charging' | 'spinning' | 'revealed'>('idle');
+  const [showFlash, setShowFlash] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
-  const [hasGenerated, setHasGenerated] = useState(false);
 
   // 3D tilt
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 });
+
+  // Opening / Reveal Animation Trigger
+  const triggerOpeningSequence = (targetArchetypeId?: string) => {
+    if (targetArchetypeId) setSelectedArchetypeId(targetArchetypeId);
+    setIsFlipped(false);
+    setOpeningStage('charging');
+
+    // Stage 1: Card charges up and vibrates with glowing aura (550ms)
+    setTimeout(() => {
+      setOpeningStage('spinning');
+
+      // Stage 2: In the middle of 3D rotation, switch face to front and trigger flash
+      setTimeout(() => {
+        setIsFlipped(true);
+        setShowFlash(true);
+      }, 450);
+
+      // Stage 3: Snap into place face-up with bounce
+      setTimeout(() => {
+        setOpeningStage('revealed');
+        setTimeout(() => setShowFlash(false), 700);
+      }, 900);
+    }, 550);
+  };
 
   const fetchUserCard = async (targetHandle: string) => {
     const clean = targetHandle.replace('@', '').trim();
     if (!clean) return;
 
     setLoading(true);
-    setHasGenerated(true);
     try {
       const res = await fetch(`/api/impressions?handle=${encodeURIComponent(clean)}`);
       const json = await res.json();
+      let assignedArchetype = 'navigator';
+
       if (json && json.ok) {
         setUserData({
           user: {
@@ -117,15 +144,15 @@ export const ArcCards: React.FC = () => {
         // Auto-assign archetype based on real stats
         const imps = json.total_impressions || 0;
         if (clean.toLowerCase() === 'yournahian') {
-          setSelectedArchetypeId('pioneer');
+          assignedArchetype = 'pioneer';
         } else if (imps > 100000) {
-          setSelectedArchetypeId('usdc_titan');
+          assignedArchetype = 'usdc_titan';
         } else if (imps > 50000) {
-          setSelectedArchetypeId('architect');
+          assignedArchetype = 'architect';
         } else if (imps > 20000) {
-          setSelectedArchetypeId('finalizer');
+          assignedArchetype = 'finalizer';
         } else {
-          setSelectedArchetypeId('navigator');
+          assignedArchetype = 'navigator';
         }
       } else {
         setUserData({
@@ -135,8 +162,12 @@ export const ArcCards: React.FC = () => {
           tweets: [],
         });
       }
+
+      // Trigger the opening animation sequence with the assigned archetype!
+      triggerOpeningSequence(assignedArchetype);
     } catch (e) {
       console.error(e);
+      triggerOpeningSequence('pioneer');
     } finally {
       setLoading(false);
     }
@@ -144,7 +175,15 @@ export const ArcCards: React.FC = () => {
 
   const archetype = ARC_ARCHETYPES[selectedArchetypeId] || ARC_ARCHETYPES.pioneer;
 
+  const handleSelectArchetype = (archId: string) => {
+    setSelectedArchetypeId(archId);
+    if (openingStage !== 'revealed') {
+      triggerOpeningSequence(archId);
+    }
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (openingStage === 'charging' || openingStage === 'spinning') return;
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -165,6 +204,15 @@ export const ArcCards: React.FC = () => {
 
   const handleMouseLeave = () => {
     setTilt({ x: 0, y: 0, glareX: 50, glareY: 50 });
+  };
+
+  const handleCardClick = () => {
+    if (openingStage === 'charging' || openingStage === 'spinning') return;
+    if (openingStage === 'idle' || !isFlipped) {
+      triggerOpeningSequence();
+    } else {
+      setIsFlipped(!isFlipped);
+    }
   };
 
   const handleDownload = async () => {
@@ -214,7 +262,14 @@ export const ArcCards: React.FC = () => {
     setTimeout(() => setCopiedLink(false), 2000);
   };
 
-  const displayHandle = userData?.user?.handle || (inputVal.trim() ? inputVal.trim() : 'your_handle');
+  const displayHandle = userData?.user?.handle || (inputVal.trim() ? inputVal.trim() : 'yournahian');
+
+  const getAnimationClass = () => {
+    if (openingStage === 'charging') return 'card-is-charging';
+    if (openingStage === 'spinning') return 'card-is-spinning';
+    if (openingStage === 'revealed') return 'card-just-revealed';
+    return '';
+  };
 
   return (
     <div className="monad-style-stage animate-fade-in">
@@ -243,7 +298,7 @@ export const ArcCards: React.FC = () => {
             disabled={loading || !inputVal.trim()}
             className="monad-btn-generate"
           >
-            {loading ? 'Forging...' : 'Forge Card'}
+            {loading ? 'Forging...' : '⚡ Forge & Reveal Card'}
           </button>
         </form>
 
@@ -254,7 +309,7 @@ export const ArcCards: React.FC = () => {
             <button
               key={arch.id}
               type="button"
-              onClick={() => setSelectedArchetypeId(arch.id)}
+              onClick={() => handleSelectArchetype(arch.id)}
               className={`monad-chip-btn ${selectedArchetypeId === arch.id ? 'active' : ''}`}
               style={{
                 borderColor: selectedArchetypeId === arch.id ? arch.glowColor : 'rgba(255,255,255,0.12)',
@@ -273,6 +328,19 @@ export const ArcCards: React.FC = () => {
       <div className="monad-stage-center">
         {/* Card and Action Side Buttons Wrapper */}
         <div className="monad-card-and-actions">
+          {/* Ambient Spotlight Beams (Arc Mystery Stage) */}
+          <div className={`card-spotlight-backdrop ${openingStage === 'charging' ? 'charging' : ''}`}>
+            <div className="card-beam" />
+            <div className="card-beam" />
+            <div className="card-beam" />
+            <div className="card-beam" />
+            <div className="card-beam" />
+            <div className="card-beam" />
+          </div>
+
+          {/* Flash burst overlay on reveal */}
+          {showFlash && <div className="card-flash-burst" />}
+
           {/* Card Canvas with 3D Perspective */}
           <div
             className="monad-perspective-wrapper"
@@ -281,11 +349,15 @@ export const ArcCards: React.FC = () => {
           >
             <div
               ref={cardRef}
-              onClick={() => setIsFlipped(!isFlipped)}
-              className="monad-card-3d"
+              onClick={handleCardClick}
+              className={`monad-card-3d ${getAnimationClass()}`}
               style={{
-                transform: `rotateX(${tilt.x}deg) rotateY(${tilt.y + (isFlipped ? 0 : 180)}deg)`,
-                boxShadow: `0 0 50px ${archetype.glowColor}66, 0 0 100px ${archetype.glowColor}33`,
+                transform: openingStage === 'spinning' || openingStage === 'charging'
+                  ? undefined
+                  : `rotateX(${tilt.x}deg) rotateY(${tilt.y + (isFlipped ? 0 : 180)}deg)`,
+                boxShadow: isFlipped
+                  ? `0 0 55px ${archetype.glowColor}66, 0 0 110px ${archetype.glowColor}33`
+                  : '0 0 50px rgba(0, 229, 255, 0.5), 0 0 100px rgba(99, 102, 241, 0.3)',
               }}
             >
               {/* CARD FRONT (Original Arc Aesthetics) */}
@@ -356,8 +428,8 @@ export const ArcCards: React.FC = () => {
               <div
                 className="monad-card-face monad-card-back"
                 style={{
-                  border: '2px solid rgba(0, 229, 255, 0.6)',
-                  boxShadow: '0 0 50px rgba(0, 229, 255, 0.4)',
+                  border: '2px solid rgba(0, 229, 255, 0.7)',
+                  boxShadow: '0 0 50px rgba(0, 229, 255, 0.5)',
                 }}
               >
                 <div className="monad-back-header">
@@ -375,7 +447,7 @@ export const ArcCards: React.FC = () => {
 
                 <div className="monad-back-cta">
                   <Sparkles style={{ width: '16px', height: '16px', color: '#00E5FF' }} />
-                  <span>CLICK TO FLIP CARD</span>
+                  <span>{openingStage === 'charging' ? 'CHARGING ENERGY...' : 'CLICK TO REVEAL CARD'}</span>
                 </div>
               </div>
             </div>
@@ -383,6 +455,17 @@ export const ArcCards: React.FC = () => {
 
           {/* Floating Action Buttons on Right */}
           <div className="monad-floating-actions">
+            {/* Replay Opening Animation Button */}
+            <button
+              type="button"
+              onClick={() => triggerOpeningSequence()}
+              title="Replay Opening Animation"
+              className="monad-action-circle"
+              style={{ color: '#00E5FF', borderColor: 'rgba(0, 229, 255, 0.4)' }}
+            >
+              <Sparkles style={{ width: '18px', height: '18px' }} />
+            </button>
+
             <button
               type="button"
               onClick={handleShareX}
@@ -422,8 +505,15 @@ export const ArcCards: React.FC = () => {
           </div>
         </div>
 
-        {/* Big Arc Cards Title & Footer Banner */}
+        {/* Big Arc Cards Title & Footer Banner (Positioned beside card on desktop) */}
         <div className="monad-banner-footer">
+          {openingStage !== 'revealed' && (
+            <div className="unrevealed-badge">
+              <Sparkles style={{ width: '14px', height: '14px' }} />
+              <span>GENESIS ARC PACK • UNREVEALED</span>
+            </div>
+          )}
+
           <h1 className="monad-huge-title">ARC CARDS</h1>
           <div className="monad-wave-divider">
             <span className="divider-line" />
@@ -434,20 +524,49 @@ export const ArcCards: React.FC = () => {
             &ldquo;Forged on sub-second finality for the Arc Community&rdquo;
           </p>
           <div className="monad-signed-in">
-            Forged for <span className="signed-handle">@{displayHandle || 'yournahin'}</span>
+            Forged for <span className="signed-handle">@{displayHandle || 'yournahian'}</span>
           </div>
 
-          <button
-            type="button"
-            onClick={handleShareX}
-            className="monad-claim-button"
-            style={{
-              boxShadow: `0 0 35px ${archetype.glowColor}88`,
-              background: `linear-gradient(135deg, ${archetype.glowColor}, #2563EB)`,
-            }}
-          >
-            Claim & Share to X
-          </button>
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+            {openingStage !== 'revealed' ? (
+              <button
+                type="button"
+                onClick={() => triggerOpeningSequence()}
+                className="monad-claim-button"
+                style={{
+                  boxShadow: '0 0 35px rgba(0, 229, 255, 0.7)',
+                  background: 'linear-gradient(135deg, #00E5FF, #2563EB)',
+                  color: '#040814',
+                  fontWeight: 900,
+                }}
+              >
+                ⚡ Open & Reveal Card ⚡
+              </button>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  onClick={handleShareX}
+                  className="monad-claim-button"
+                  style={{
+                    boxShadow: `0 0 35px ${archetype.glowColor}88`,
+                    background: `linear-gradient(135deg, ${archetype.glowColor}, #2563EB)`,
+                  }}
+                >
+                  Claim & Share to X
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => triggerOpeningSequence()}
+                  className="replay-reveal-btn"
+                >
+                  <Sparkles style={{ width: '15px', height: '15px', color: '#00E5FF' }} />
+                  <span>Replay Animation</span>
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>
