@@ -128,7 +128,9 @@ export const ArcCards: React.FC = () => {
   const [selectedArchetypeId, setSelectedArchetypeId] = useState<string>('pioneer');
   // Starts with card back showing (unrevealed pack)
   const [isFlipped, setIsFlipped] = useState(false);
+  const [hasRevealed, setHasRevealed] = useState(false);
   const [openingStage, setOpeningStage] = useState<'idle' | 'charging' | 'spinning' | 'revealed'>('idle');
+  const [isFlipping, setIsFlipping] = useState(false);
   const [showFlash, setShowFlash] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -140,6 +142,18 @@ export const ArcCards: React.FC = () => {
   // 3D tilt
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 });
+
+  // Smooth card flip handler
+  const toggleFlip = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (openingStage === 'charging' || openingStage === 'spinning') return;
+    setIsFlipping(true);
+    setTilt({ x: 0, y: 0, glareX: 50, glareY: 50 });
+    setIsFlipped((prev) => !prev);
+    setTimeout(() => {
+      setIsFlipping(false);
+    }, 700);
+  };
 
   // Keyboard navigation for 3D carousel
   useEffect(() => {
@@ -176,7 +190,13 @@ export const ArcCards: React.FC = () => {
       // Stage 3: Snap into place face-up with bounce
       setTimeout(() => {
         setOpeningStage('revealed');
+        setHasRevealed(true);
         setTimeout(() => setShowFlash(false), 700);
+
+        // Reset stage to idle after reveal so it completely frees transform and allows smooth 3D flipping!
+        setTimeout(() => {
+          setOpeningStage('idle');
+        }, 600);
       }, 900);
     }, 550);
   };
@@ -274,7 +294,7 @@ export const ArcCards: React.FC = () => {
 
   const handleCardClick = () => {
     if (openingStage === 'charging' || openingStage === 'spinning') return;
-    if (openingStage === 'idle' || !isFlipped) {
+    if (!hasRevealed) {
       if (!userData) {
         const allIds = Object.keys(ARC_ARCHETYPES);
         const randId = allIds[Math.floor(Math.random() * allIds.length)];
@@ -283,7 +303,7 @@ export const ArcCards: React.FC = () => {
         triggerOpeningSequence();
       }
     } else {
-      setIsFlipped(!isFlipped);
+      toggleFlip();
     }
   };
 
@@ -340,6 +360,7 @@ export const ArcCards: React.FC = () => {
     if (openingStage === 'charging') return 'card-is-charging';
     if (openingStage === 'spinning') return 'card-is-spinning';
     if (openingStage === 'revealed') return 'card-just-revealed';
+    if (isFlipping) return 'is-flipping-transition';
     return '';
   };
 
@@ -412,7 +433,7 @@ export const ArcCards: React.FC = () => {
               style={{
                 transform: openingStage === 'spinning' || openingStage === 'charging'
                   ? undefined
-                  : `rotateX(${tilt.x}deg) rotateY(${tilt.y + (isFlipped ? 0 : 180)}deg)`,
+                  : `rotateX(${tilt.x}deg) rotateY(${isFlipped ? tilt.y : 180 - tilt.y}deg)`,
                 boxShadow: isFlipped
                   ? `0 0 55px ${archetype.glowColor}66, 0 0 110px ${archetype.glowColor}33`
                   : '0 0 50px rgba(0, 229, 255, 0.5), 0 0 100px rgba(99, 102, 241, 0.3)',
@@ -532,52 +553,26 @@ export const ArcCards: React.FC = () => {
             </div>
           </div>
 
-          {/* Floating Action Buttons on Right */}
+          {/* Floating Action Buttons Beside Card (Utility controls only: Flip, Download, Copy) */}
           <div className="monad-floating-actions">
-            {/* Replay Opening Animation Button */}
+            {/* Flip Card (Front / Back toggle) */}
             <button
               type="button"
-              onClick={() => triggerOpeningSequence()}
-              title="Replay Opening Animation"
-              className="monad-action-circle"
-              style={{ color: '#00E5FF', borderColor: 'rgba(0, 229, 255, 0.4)' }}
+              onClick={toggleFlip}
+              title={isFlipped ? 'Flip to Card Back' : 'Flip to Card Front'}
+              className={`monad-action-circle ${!isFlipped ? 'active-flip' : ''}`}
             >
-              <Sparkles style={{ width: '18px', height: '18px' }} />
+              <RefreshCw
+                style={{
+                  width: '18px',
+                  height: '18px',
+                  transform: !isFlipped ? 'rotate(180deg)' : 'none',
+                  transition: 'transform 0.4s ease',
+                }}
+              />
             </button>
 
-            {/* Choose Yours / Customizer button */}
-            <button
-              type="button"
-              onClick={() => {
-                const idx = ARCHETYPES_LIST.findIndex((a) => a.id === selectedArchetypeId);
-                setCarouselIndex(idx >= 0 ? idx : 0);
-                setIsCustomizerOpen(true);
-              }}
-              title="Choose Yours (Customizer)"
-              className="monad-action-circle"
-              style={{ color: archetype.glowColor, borderColor: `${archetype.glowColor}66` }}
-            >
-              <Palette style={{ width: '18px', height: '18px' }} />
-            </button>
-
-            <button
-              type="button"
-              onClick={handleShareX}
-              title="Share to X"
-              className="monad-action-circle"
-            >
-              <Share2 style={{ width: '18px', height: '18px' }} />
-            </button>
-
-            <button
-              type="button"
-              onClick={handleCopyLink}
-              title="Copy Link"
-              className="monad-action-circle"
-            >
-              {copiedLink ? <Check style={{ width: '18px', height: '18px', color: '#10B981' }} /> : <Copy style={{ width: '18px', height: '18px' }} />}
-            </button>
-
+            {/* Download Card PNG */}
             <button
               type="button"
               onClick={handleDownload}
@@ -588,20 +583,21 @@ export const ArcCards: React.FC = () => {
               <Download style={{ width: '18px', height: '18px' }} />
             </button>
 
+            {/* Copy Card Link */}
             <button
               type="button"
-              onClick={() => setIsFlipped(!isFlipped)}
-              title="Flip Card"
+              onClick={handleCopyLink}
+              title="Copy Card Link"
               className="monad-action-circle"
             >
-              <RefreshCw style={{ width: '18px', height: '18px' }} />
+              {copiedLink ? <Check style={{ width: '18px', height: '18px', color: '#10B981' }} /> : <Copy style={{ width: '18px', height: '18px' }} />}
             </button>
           </div>
         </div>
 
         {/* Big Arc Cards Title & Footer Banner */}
         <div className="monad-banner-footer">
-          {openingStage !== 'revealed' && (
+          {!hasRevealed && (
             <div className="unrevealed-badge">
               <Sparkles style={{ width: '14px', height: '14px' }} />
               <span>GENESIS ARC PACK • UNREVEALED</span>
@@ -622,7 +618,7 @@ export const ArcCards: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
-            {openingStage !== 'revealed' ? (
+            {!hasRevealed ? (
               <button
                 type="button"
                 onClick={() => triggerOpeningSequence()}
