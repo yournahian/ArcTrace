@@ -53,16 +53,34 @@ function generateFallbackSeries(seed: number, baseTotal: number) {
   return series;
 }
 
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const username = searchParams.get('handle') || searchParams.get('username');
+  if (!username) {
+    return NextResponse.json({ ok: false, error: 'Username or handle parameter required' }, { status: 400 });
+  }
+  return handleImpressions(username);
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const rawUsername = body.username?.trim();
+    const rawUsername = body.username?.trim() || body.handle?.trim();
 
     if (!rawUsername) {
       return NextResponse.json({ ok: false, error: 'Username is required' }, { status: 400 });
     }
 
-    const cleanUsername = rawUsername.replace(/^@/, '');
+    return handleImpressions(rawUsername);
+  } catch (error) {
+    console.error('Impressions API route error:', error);
+    return NextResponse.json({ ok: false, error: 'Failed to calculate impressions' }, { status: 500 });
+  }
+}
+
+async function handleImpressions(rawUsername: string) {
+  try {
+    const cleanUsername = rawUsername.replace(/^@/, '').trim();
 
     // 1. First priority: Try fetching live real data from Xerper's arc impressions engine
     try {
