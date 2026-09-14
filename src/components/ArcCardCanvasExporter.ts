@@ -72,11 +72,47 @@ export async function exportArcCardPNG(data: ArcCardExportData): Promise<Blob | 
   ctx.fill();
   ctx.stroke();
 
-  ctx.font = '800 22px "Space Grotesk", sans-serif';
+  // Draw user's X avatar (DP) if present
+  let textStartX = hbx + 18;
+  if (data.avatar) {
+    try {
+      const avatarImg = new Image();
+      avatarImg.crossOrigin = 'anonymous';
+      avatarImg.src = data.avatar;
+      await new Promise((resolve) => {
+        avatarImg.onload = resolve;
+        avatarImg.onerror = resolve;
+      });
+      if (avatarImg.complete && avatarImg.naturalWidth > 0) {
+        ctx.save();
+        const avR = 17;
+        const avX = hbx + 16 + avR;
+        const avY = hby + hbh / 2;
+        ctx.beginPath();
+        ctx.arc(avX, avY, avR, 0, Math.PI * 2);
+        ctx.clip();
+        ctx.drawImage(avatarImg, avX - avR, avY - avR, avR * 2, avR * 2);
+        ctx.restore();
+        // border around avatar
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(hbx + 16 + avR, hby + hbh / 2, avR, 0, Math.PI * 2);
+        ctx.strokeStyle = data.glowColor || '#00E5FF';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.restore();
+        textStartX = hbx + 16 + avR * 2 + 12;
+      }
+    } catch (e) {
+      console.warn('Avatar draw error:', e);
+    }
+  }
+
+  ctx.font = '800 20px "Space Grotesk", sans-serif';
   ctx.fillStyle = '#0F172A';
   ctx.textBaseline = 'middle';
   const cleanHandle = data.handle.startsWith('@') ? data.handle : '@' + data.handle;
-  ctx.fillText(cleanHandle, hbx + 18, hby + hbh / 2);
+  ctx.fillText(cleanHandle, textStartX, hby + hbh / 2);
 
   // Top Right Star / Diamond
   ctx.font = '700 20px "Space Mono", monospace';

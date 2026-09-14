@@ -1,5 +1,5 @@
-import React, { useState, useRef } from 'react';
-import { Download, Share2, Sparkles, RefreshCw, Star, Copy, Check } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { Download, Share2, Sparkles, RefreshCw, Copy, Check, Palette, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { exportArcCardPNG } from './ArcCardCanvasExporter';
 import { ArcLogo } from './ArcLogo';
 
@@ -14,7 +14,7 @@ export interface CardArchetype {
   iconBg: string;
 }
 
-// 100% Original Arc Network Archetypes with high-res character illustrations
+// 10 100% Original Arc Network Archetypes with high-res anime cyberpunk illustrations
 export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
   pioneer: {
     id: 'pioneer',
@@ -22,7 +22,7 @@ export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
     lore: 'Bridged liquidity on Genesis Block #1 and never bridged back. Holds unshakable conviction in the Economic OS.',
     rarity: 'MYTHIC',
     glowColor: '#00E5FF',
-    image: '/cards/pioneer.jpg',
+    image: '/cards/pioneer.png',
     badgeEmoji: '🚀',
     iconBg: '#00E5FF',
   },
@@ -32,7 +32,7 @@ export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
     lore: 'Deploys composable financial primitives directly to Arc testnet. Sub-second finality is their native language.',
     rarity: 'LEGENDARY',
     glowColor: '#F59E0B',
-    image: '/cards/architect.jpg',
+    image: '/cards/architect.png',
     badgeEmoji: '⚙️',
     iconBg: '#F59E0B',
   },
@@ -40,7 +40,7 @@ export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
     id: 'usdc_titan',
     title: 'USDC Liquidity Titan',
     lore: 'Trades exclusively on native Circle USDC settlement rails. Zero synthetic wrapped tokens, pure capital efficiency.',
-    rarity: 'LEGENDARY',
+    rarity: 'MYTHIC',
     glowColor: '#8B5CF6',
     image: '/cards/usdc_titan.png',
     badgeEmoji: '💎',
@@ -72,11 +72,53 @@ export const ARC_ARCHETYPES: Record<string, CardArchetype> = {
     lore: 'Protects the timeline with verifiable metrics and TPS charts. Believes in fast, sub-second deterministic settlement.',
     rarity: 'RARE',
     glowColor: '#10B981',
-    image: '/cards/no_tech.jpg',
+    image: '/cards/sentinel.png',
     badgeEmoji: '🛡️',
     iconBg: '#10B981',
   },
+  vanguard: {
+    id: 'vanguard',
+    title: 'Gasless Vanguard',
+    lore: 'Executes transactions sponsored entirely by paymasters. Never once held gas tokens, floating frictionless on Arc.',
+    rarity: 'EPIC',
+    glowColor: '#F97316',
+    image: '/cards/vanguard.png',
+    badgeEmoji: '🔥',
+    iconBg: '#F97316',
+  },
+  sovereign: {
+    id: 'sovereign',
+    title: 'Consensus Sovereign',
+    lore: 'Validates every epoch with mathematically proven finality. The supreme judge of sub-second state agreement.',
+    rarity: 'MYTHIC',
+    glowColor: '#EAB308',
+    image: '/cards/sovereign.png',
+    badgeEmoji: '👑',
+    iconBg: '#EAB308',
+  },
+  arbitrageur: {
+    id: 'arbitrageur',
+    title: 'Quantum Arbitrageur',
+    lore: 'Extracts zero-risk multi-chain spread between Arc and external L1s before mempools even serialize.',
+    rarity: 'LEGENDARY',
+    glowColor: '#06B6D4',
+    image: '/cards/arbitrageur.png',
+    badgeEmoji: '🌀',
+    iconBg: '#06B6D4',
+  },
+  devourer: {
+    id: 'devourer',
+    title: 'Testnet Devourer',
+    lore: 'Claimed every faucet drop, broke 14 testnet nodes, and stress-tested Arc to 40,000 TPS just for fun.',
+    rarity: 'RARE',
+    glowColor: '#84CC16',
+    image: '/cards/devourer.png',
+    badgeEmoji: '🌟',
+    iconBg: '#84CC16',
+  },
 };
+
+const ARCHETYPES_LIST = Object.values(ARC_ARCHETYPES);
 
 export const ArcCards: React.FC = () => {
   // Free input field by default: empty string
@@ -84,16 +126,36 @@ export const ArcCards: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [userData, setUserData] = useState<any>(null);
   const [selectedArchetypeId, setSelectedArchetypeId] = useState<string>('pioneer');
-  // Starts with card back showing (unrevealed pack) so user experiences the opening animation!
+  // Starts with card back showing (unrevealed pack)
   const [isFlipped, setIsFlipped] = useState(false);
   const [openingStage, setOpeningStage] = useState<'idle' | 'charging' | 'spinning' | 'revealed'>('idle');
   const [showFlash, setShowFlash] = useState(false);
   const [downloading, setDownloading] = useState(false);
   const [copiedLink, setCopiedLink] = useState(false);
 
+  // 3D Carousel Customizer State
+  const [isCustomizerOpen, setIsCustomizerOpen] = useState(false);
+  const [carouselIndex, setCarouselIndex] = useState(0);
+
   // 3D tilt
   const cardRef = useRef<HTMLDivElement>(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0, glareX: 50, glareY: 50 });
+
+  // Keyboard navigation for 3D carousel
+  useEffect(() => {
+    if (!isCustomizerOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        setCarouselIndex((prev) => (prev - 1 + ARCHETYPES_LIST.length) % ARCHETYPES_LIST.length);
+      } else if (e.key === 'ArrowRight') {
+        setCarouselIndex((prev) => (prev + 1) % ARCHETYPES_LIST.length);
+      } else if (e.key === 'Escape') {
+        setIsCustomizerOpen(false);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isCustomizerOpen]);
 
   // Opening / Reveal Animation Trigger
   const triggerOpeningSequence = (targetArchetypeId?: string) => {
@@ -141,18 +203,27 @@ export const ArcCards: React.FC = () => {
           tweets: json.posts || [],
         });
 
-        // Auto-assign archetype based on real stats
+        // Smart assignment according to engagement metrics
         const imps = json.total_impressions || 0;
         if (clean.toLowerCase() === 'yournahian') {
           assignedArchetype = 'pioneer';
         } else if (imps > 100000) {
           assignedArchetype = 'usdc_titan';
         } else if (imps > 50000) {
+          assignedArchetype = 'sovereign';
+        } else if (imps > 25000) {
           assignedArchetype = 'architect';
-        } else if (imps > 20000) {
+        } else if (imps > 10000) {
           assignedArchetype = 'finalizer';
+        } else if (imps > 5000) {
+          assignedArchetype = 'vanguard';
+        } else if (imps > 2000) {
+          assignedArchetype = 'arbitrageur';
+        } else if (imps > 500) {
+          assignedArchetype = 'devourer';
         } else {
-          assignedArchetype = 'navigator';
+          const pool = ['navigator', 'sentinel', 'vanguard', 'pioneer'];
+          assignedArchetype = pool[Math.floor(Math.random() * pool.length)];
         }
       } else {
         setUserData({
@@ -161,26 +232,21 @@ export const ArcCards: React.FC = () => {
           totalPosts: 0,
           tweets: [],
         });
+        const allIds = Object.keys(ARC_ARCHETYPES);
+        assignedArchetype = allIds[Math.floor(Math.random() * allIds.length)];
       }
 
-      // Trigger the opening animation sequence with the assigned archetype!
       triggerOpeningSequence(assignedArchetype);
     } catch (e) {
       console.error(e);
-      triggerOpeningSequence('pioneer');
+      const allIds = Object.keys(ARC_ARCHETYPES);
+      triggerOpeningSequence(allIds[Math.floor(Math.random() * allIds.length)]);
     } finally {
       setLoading(false);
     }
   };
 
   const archetype = ARC_ARCHETYPES[selectedArchetypeId] || ARC_ARCHETYPES.pioneer;
-
-  const handleSelectArchetype = (archId: string) => {
-    setSelectedArchetypeId(archId);
-    if (openingStage !== 'revealed') {
-      triggerOpeningSequence(archId);
-    }
-  };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
     if (openingStage === 'charging' || openingStage === 'spinning') return;
@@ -209,7 +275,13 @@ export const ArcCards: React.FC = () => {
   const handleCardClick = () => {
     if (openingStage === 'charging' || openingStage === 'spinning') return;
     if (openingStage === 'idle' || !isFlipped) {
-      triggerOpeningSequence();
+      if (!userData) {
+        const allIds = Object.keys(ARC_ARCHETYPES);
+        const randId = allIds[Math.floor(Math.random() * allIds.length)];
+        triggerOpeningSequence(randId);
+      } else {
+        triggerOpeningSequence();
+      }
     } else {
       setIsFlipped(!isFlipped);
     }
@@ -271,9 +343,16 @@ export const ArcCards: React.FC = () => {
     return '';
   };
 
+  const handleEquipFromCarousel = (arch: CardArchetype) => {
+    setSelectedArchetypeId(arch.id);
+    setIsCustomizerOpen(false);
+    setShowFlash(true);
+    setTimeout(() => setShowFlash(false), 600);
+  };
+
   return (
     <div className="monad-style-stage animate-fade-in">
-      {/* Top Search Bar (100% Free, no default name) */}
+      {/* Top Search Bar (Clean, no chips above) */}
       <div className="monad-search-container">
         <form
           onSubmit={(e) => {
@@ -301,27 +380,6 @@ export const ArcCards: React.FC = () => {
             {loading ? 'Forging...' : '⚡ Forge & Reveal Card'}
           </button>
         </form>
-
-        {/* Archetype Selector Chips (Original Arc Archetypes) */}
-        <div className="monad-chips-row">
-          <span className="chips-label">Card Archetypes:</span>
-          {Object.values(ARC_ARCHETYPES).map((arch) => (
-            <button
-              key={arch.id}
-              type="button"
-              onClick={() => handleSelectArchetype(arch.id)}
-              className={`monad-chip-btn ${selectedArchetypeId === arch.id ? 'active' : ''}`}
-              style={{
-                borderColor: selectedArchetypeId === arch.id ? arch.glowColor : 'rgba(255,255,255,0.12)',
-                color: selectedArchetypeId === arch.id ? arch.glowColor : '#94A3B8',
-                background: selectedArchetypeId === arch.id ? `${arch.glowColor}18` : 'rgba(255,255,255,0.03)',
-              }}
-            >
-              <span>{arch.badgeEmoji}</span>
-              <span>{arch.title}</span>
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Main 3D Card Stage */}
@@ -375,11 +433,32 @@ export const ArcCards: React.FC = () => {
                   }}
                 />
 
-                {/* Top Nameplate Box */}
+                {/* Top Nameplate Box with User's X Avatar / DP */}
                 <div className="monad-card-nameplate">
-                  <span className="monad-nameplate-text">
-                    @{displayHandle}
-                  </span>
+                  <div className="monad-nameplate-user">
+                    {userData?.user?.profile_image_url ? (
+                      <img
+                        src={userData.user.profile_image_url}
+                        alt={displayHandle}
+                        className="monad-user-dp"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      <div
+                        className="monad-user-dp-placeholder"
+                        style={{
+                          background: `linear-gradient(135deg, ${archetype.glowColor}, #3B82F6)`,
+                        }}
+                      >
+                        {displayHandle.replace('@', '').charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="monad-nameplate-text">
+                      @{displayHandle}
+                    </span>
+                  </div>
                   <div
                     className="monad-nameplate-star"
                     style={{ color: archetype.glowColor }}
@@ -466,6 +545,21 @@ export const ArcCards: React.FC = () => {
               <Sparkles style={{ width: '18px', height: '18px' }} />
             </button>
 
+            {/* Choose Yours / Customizer button */}
+            <button
+              type="button"
+              onClick={() => {
+                const idx = ARCHETYPES_LIST.findIndex((a) => a.id === selectedArchetypeId);
+                setCarouselIndex(idx >= 0 ? idx : 0);
+                setIsCustomizerOpen(true);
+              }}
+              title="Choose Yours (Customizer)"
+              className="monad-action-circle"
+              style={{ color: archetype.glowColor, borderColor: `${archetype.glowColor}66` }}
+            >
+              <Palette style={{ width: '18px', height: '18px' }} />
+            </button>
+
             <button
               type="button"
               onClick={handleShareX}
@@ -505,7 +599,7 @@ export const ArcCards: React.FC = () => {
           </div>
         </div>
 
-        {/* Big Arc Cards Title & Footer Banner (Positioned beside card on desktop) */}
+        {/* Big Arc Cards Title & Footer Banner */}
         <div className="monad-banner-footer">
           {openingStage !== 'revealed' && (
             <div className="unrevealed-badge">
@@ -558,6 +652,19 @@ export const ArcCards: React.FC = () => {
 
                 <button
                   type="button"
+                  onClick={() => {
+                    const idx = ARCHETYPES_LIST.findIndex((a) => a.id === selectedArchetypeId);
+                    setCarouselIndex(idx >= 0 ? idx : 0);
+                    setIsCustomizerOpen(true);
+                  }}
+                  className="choose-yours-btn"
+                >
+                  <Palette style={{ width: '16px', height: '16px' }} />
+                  <span>Choose Yours</span>
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => triggerOpeningSequence()}
                   className="replay-reveal-btn"
                 >
@@ -569,6 +676,184 @@ export const ArcCards: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* 3D Card Carousel Customizer Modal (Facebook Reel 3D Carousel Inspiration) */}
+      {isCustomizerOpen && (
+        <div
+          className="carousel-modal-overlay"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsCustomizerOpen(false);
+          }}
+        >
+          <div className="carousel-modal-container">
+            <button
+              type="button"
+              onClick={() => setIsCustomizerOpen(false)}
+              className="carousel-close-btn"
+              title="Close Customizer"
+            >
+              <X style={{ width: '22px', height: '22px' }} />
+            </button>
+
+            <div className="carousel-header">
+              <h2 className="carousel-title">CHOOSE YOURS</h2>
+              <div className="carousel-subtitle">
+                3D ARCHETYPE CAROUSEL // 10 GENESIS ARC WARRIORS
+              </div>
+            </div>
+
+            {/* 3D Carousel Stage */}
+            <div className="carousel-3d-stage">
+              <button
+                type="button"
+                onClick={() =>
+                  setCarouselIndex((prev) => (prev - 1 + ARCHETYPES_LIST.length) % ARCHETYPES_LIST.length)
+                }
+                className="carousel-nav-btn prev"
+                title="Previous Archetype"
+              >
+                <ChevronLeft style={{ width: '28px', height: '28px' }} />
+              </button>
+
+              <div className="carousel-track">
+                {ARCHETYPES_LIST.map((arch, idx) => {
+                  const offset = idx - carouselIndex;
+                  const absOffset = Math.abs(offset);
+                  const isVisible = absOffset <= 2;
+
+                  if (!isVisible) return null;
+
+                  const translateX = offset * 240;
+                  const translateZ = absOffset === 0 ? 90 : -130 * absOffset;
+                  const rotateY = offset * -28;
+                  const scale = absOffset === 0 ? 1.05 : 0.82;
+                  const opacity = absOffset === 0 ? 1 : Math.max(0.35, 1 - absOffset * 0.35);
+
+                  return (
+                    <div
+                      key={arch.id}
+                      onClick={() => setCarouselIndex(idx)}
+                      className={`carousel-card-item ${absOffset === 0 ? 'active' : ''}`}
+                      style={{
+                        transform: `translateX(${translateX}px) translateZ(${translateZ}px) rotateY(${rotateY}deg) scale(${scale})`,
+                        opacity,
+                        zIndex: 20 - absOffset,
+                        borderColor: absOffset === 0 ? arch.glowColor : 'rgba(255,255,255,0.15)',
+                        boxShadow: absOffset === 0
+                          ? `0 0 50px ${arch.glowColor}88, 0 0 100px ${arch.glowColor}44`
+                          : '0 10px 30px rgba(0,0,0,0.5)',
+                      }}
+                    >
+                      {/* Nameplate */}
+                      <div className="monad-card-nameplate" style={{ height: '36px', padding: '0 12px' }}>
+                        <div className="monad-nameplate-user">
+                          {userData?.user?.profile_image_url ? (
+                            <img
+                              src={userData.user.profile_image_url}
+                              alt={displayHandle}
+                              className="monad-user-dp"
+                              style={{ width: '22px', height: '22px' }}
+                            />
+                          ) : (
+                            <div
+                              className="monad-user-dp-placeholder"
+                              style={{ width: '22px', height: '22px', fontSize: '11px', background: arch.glowColor }}
+                            >
+                              {displayHandle.replace('@', '').charAt(0).toUpperCase()}
+                            </div>
+                          )}
+                          <span className="monad-nameplate-text" style={{ fontSize: '13px' }}>
+                            @{displayHandle}
+                          </span>
+                        </div>
+                        <div className="monad-nameplate-star" style={{ color: arch.glowColor, fontSize: '14px' }}>
+                          ✦
+                        </div>
+                      </div>
+
+                      {/* Art */}
+                      <div className="monad-art-frame" style={{ height: '200px', margin: '4px 0' }}>
+                        <img
+                          src={arch.image}
+                          alt={arch.title}
+                          className="monad-art-image"
+                        />
+                      </div>
+
+                      {/* Trait Box */}
+                      <div className="monad-trait-card" style={{ minHeight: '80px', padding: '8px 10px' }}>
+                        <div
+                          className="monad-trait-icon-box"
+                          style={{ width: '40px', height: '40px', background: arch.iconBg }}
+                        >
+                          <span className="monad-trait-icon" style={{ fontSize: '20px' }}>{arch.badgeEmoji}</span>
+                        </div>
+                        <div className="monad-trait-content">
+                          <div className="monad-trait-title" style={{ fontSize: '13px' }}>
+                            {arch.title}
+                          </div>
+                          <p className="monad-trait-lore" style={{ fontSize: '10px', lineHeight: 1.3 }}>
+                            {arch.lore}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="monad-card-footer" style={{ padding: '0 4px' }}>
+                        <span className="monad-footer-brand" style={{ fontSize: '10px' }}>Arc Cards</span>
+                        <div
+                          className="monad-wave-badge"
+                          style={{ background: arch.glowColor, color: '#040814', fontWeight: 900 }}
+                        >
+                          <span>{arch.rarity}</span>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setCarouselIndex((prev) => (prev + 1) % ARCHETYPES_LIST.length)}
+                className="carousel-nav-btn next"
+                title="Next Archetype"
+              >
+                <ChevronRight style={{ width: '28px', height: '28px' }} />
+              </button>
+            </div>
+
+            {/* Carousel Bottom Control Bar */}
+            <div className="carousel-bottom-bar">
+              {/* Dots */}
+              <div className="carousel-dots">
+                {ARCHETYPES_LIST.map((_, dotIdx) => (
+                  <div
+                    key={dotIdx}
+                    onClick={() => setCarouselIndex(dotIdx)}
+                    className={`carousel-dot ${dotIdx === carouselIndex ? 'active' : ''}`}
+                  />
+                ))}
+              </div>
+
+              {/* Equip Button */}
+              <button
+                type="button"
+                onClick={() => handleEquipFromCarousel(ARCHETYPES_LIST[carouselIndex])}
+                className="carousel-equip-btn"
+                style={{
+                  background: `linear-gradient(135deg, ${ARCHETYPES_LIST[carouselIndex].glowColor}, #3B82F6)`,
+                  boxShadow: `0 0 35px ${ARCHETYPES_LIST[carouselIndex].glowColor}99`,
+                }}
+              >
+                <span>{ARCHETYPES_LIST[carouselIndex].badgeEmoji}</span>
+                <span>Equip {ARCHETYPES_LIST[carouselIndex].title}</span>
+                <Sparkles style={{ width: '16px', height: '16px' }} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

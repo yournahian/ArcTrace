@@ -2418,3 +2418,271 @@ html, body {
   transform: translateY(-2px);
   box-shadow: 0 0 20px rgba(0, 229, 255, 0.35);
 }
+
+/* User X Avatar (DP) in Nameplate */
+.monad-nameplate-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.monad-user-dp {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(15, 23, 42, 0.2);
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.monad-user-dp-placeholder {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 800;
+  color: #FFFFFF;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* Choose Yours / Customizer Button */
+.choose-yours-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  background: rgba(0, 229, 255, 0.12);
+  border: 1.5px solid #00E5FF;
+  color: #00E5FF;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 20px rgba(0, 229, 255, 0.25);
+}
+
+.choose-yours-btn:hover {
+  background: #00E5FF;
+  color: #040814;
+  transform: translateY(-2px);
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.6);
+}
+
+/* 3D Card Carousel Customizer Modal (Facebook reel inspiration) */
+.carousel-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(3, 7, 18, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  animation: modalFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.carousel-modal-container {
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.carousel-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.carousel-title {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 900;
+  color: #FFFFFF;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-shadow: 0 0 30px rgba(0, 229, 255, 0.4);
+}
+
+.carousel-subtitle {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: #00E5FF;
+  margin-top: 6px;
+  letter-spacing: 0.08em;
+}
+
+.carousel-close-btn {
+  position: absolute;
+  top: -10px;
+  right: 12px;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #FFFFFF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 60;
+}
+
+.carousel-close-btn:hover {
+  background: rgba(239, 68, 68, 0.25);
+  border-color: #EF4444;
+  color: #EF4444;
+  transform: scale(1.1);
+}
+
+/* 3D Carousel Stage */
+.carousel-3d-stage {
+  position: relative;
+  width: 100%;
+  height: 460px;
+  perspective: 1200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+.carousel-track {
+  position: relative;
+  width: 270px;
+  height: 420px;
+  transform-style: preserve-3d;
+}
+
+.carousel-card-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 270px;
+  height: 420px;
+  border-radius: 22px;
+  cursor: pointer;
+  transition: transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.45s, filter 0.45s, box-shadow 0.45s;
+  user-select: none;
+  background: linear-gradient(160deg, #FFFFFF 0%, #F8FAFC 60%, #F1F5F9 100%);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transform-style: preserve-3d;
+}
+
+.carousel-card-item.active {
+  cursor: default;
+}
+
+.carousel-card-item:hover:not(.active) {
+  filter: brightness(1.15) !important;
+}
+
+/* Carousel Arrow Navigation */
+.carousel-nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: rgba(10, 16, 30, 0.95);
+  border: 1px solid rgba(0, 229, 255, 0.5);
+  color: #00E5FF;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  transition: all 0.2s ease;
+  box-shadow: 0 0 25px rgba(0, 229, 255, 0.3);
+}
+
+.carousel-nav-btn:hover {
+  background: #00E5FF;
+  color: #040814;
+  transform: translateY(-50%) scale(1.12);
+  box-shadow: 0 0 35px rgba(0, 229, 255, 0.6);
+}
+
+.carousel-nav-btn.prev {
+  left: 20px;
+}
+
+.carousel-nav-btn.next {
+  right: 20px;
+}
+
+/* Carousel Bottom Bar */
+.carousel-bottom-bar {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.carousel-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.carousel-dot.active {
+  width: 26px;
+  border-radius: 12px;
+  background: #00E5FF;
+  box-shadow: 0 0 14px #00E5FF;
+}
+
+.carousel-equip-btn {
+  height: 48px;
+  padding: 0 36px;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  color: #040814;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.carousel-equip-btn:hover {
+  transform: scale(1.05);
+}
