@@ -1907,23 +1907,27 @@ html, body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   width: 100%;
-  gap: 32px;
+  gap: 36px;
+}
+
+@media (min-width: 840px) {
+  .monad-stage-center {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 48px;
+  }
 }
 
 .monad-card-and-actions {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
   position: relative;
-}
-
-@media (min-width: 640px) {
-  .monad-card-and-actions {
-    flex-direction: row;
-    align-items: center;
-  }
+  flex-shrink: 0;
 }
 
 .monad-perspective-wrapper {
@@ -1932,8 +1936,8 @@ html, body {
 
 .monad-card-3d {
   position: relative;
-  width: 340px;
-  height: 540px;
+  width: 330px;
+  height: 520px;
   border-radius: 28px;
   cursor: pointer;
   user-select: none;
@@ -1968,7 +1972,7 @@ html, body {
 }
 
 .monad-card-nameplate {
-  height: 44px;
+  height: 42px;
   border-radius: 12px;
   background: rgba(15, 23, 42, 0.05);
   border: 1px solid rgba(15, 23, 42, 0.1);
@@ -1980,7 +1984,7 @@ html, body {
 
 .monad-nameplate-text {
   font-family: var(--font-display);
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 800;
   color: #0F172A;
 }
@@ -1992,11 +1996,11 @@ html, body {
 
 .monad-art-frame {
   width: 100%;
-  height: 275px;
+  height: 265px;
   border-radius: 16px;
   overflow: hidden;
   border: 1.5px solid rgba(15, 23, 42, 0.1);
-  margin: 6px 0;
+  margin: 4px 0;
   background: #000000;
   box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.2);
 }
@@ -2009,21 +2013,21 @@ html, body {
 }
 
 .monad-trait-card {
-  min-height: 96px;
-  border-radius: 16px;
+  min-height: 92px;
+  border-radius: 14px;
   background: #FFFFFF;
   border: 1.5px solid rgba(15, 23, 42, 0.12);
-  padding: 12px 14px;
+  padding: 10px 12px;
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 12px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
 }
 
 .monad-trait-icon-box {
-  width: 52px;
-  height: 52px;
-  border-radius: 14px;
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2032,7 +2036,7 @@ html, body {
 }
 
 .monad-trait-icon {
-  font-size: 26px;
+  font-size: 24px;
 }
 
 .monad-trait-content {
@@ -2044,7 +2048,7 @@ html, body {
 
 .monad-trait-title {
   font-family: var(--font-display);
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 800;
   color: #0F172A;
 }
@@ -2072,7 +2076,7 @@ html, body {
 }
 
 .monad-wave-badge {
-  padding: 3px 8px;
+  padding: 2px 8px;
   border-radius: 9999px;
   background: #0F172A;
   color: #FFFFFF;
@@ -2112,7 +2116,7 @@ html, body {
 }
 
 .monad-back-emblem {
-  padding: 26px;
+  padding: 24px;
   border-radius: 50%;
   background: rgba(0, 229, 255, 0.08);
   border: 1px solid rgba(0, 229, 255, 0.35);
@@ -2156,20 +2160,13 @@ html, body {
 /* Floating Action Circle Buttons */
 .monad-floating-actions {
   display: flex;
-  flex-direction: row;
-  gap: 12px;
-}
-
-@media (min-width: 640px) {
-  .monad-floating-actions {
-    flex-direction: column;
-    margin-left: 12px;
-  }
+  flex-direction: column;
+  gap: 10px;
 }
 
 .monad-action-circle {
-  width: 48px;
-  height: 48px;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   background: rgba(10, 16, 29, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.18);
@@ -2189,24 +2186,25 @@ html, body {
   box-shadow: 0 0 25px rgba(0, 229, 255, 0.5);
 }
 
-/* Big Monad Cards Title Banner Below Card */
+/* Arc Cards Hero Showcase Beside Card */
 .monad-banner-footer {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-align: center;
-  margin-top: 10px;
+  align-items: flex-start;
+  gap: 16px;
+  text-align: left;
+  max-width: 420px;
 }
 
 .monad-huge-title {
   font-family: var(--font-display);
-  font-size: 52px;
+  font-size: 50px;
   font-weight: 900;
   color: #FFFFFF;
   letter-spacing: 0.04em;
+  line-height: 1;
   margin: 0;
-  text-shadow: 0 0 35px rgba(168, 85, 247, 0.5);
+  text-shadow: 0 0 35px rgba(0, 229, 255, 0.4);
 }
 
 .monad-wave-divider {
@@ -2218,7 +2216,7 @@ html, body {
 .divider-line {
   width: 40px;
   height: 2px;
-  background: #A855F7;
+  background: #00E5FF;
   opacity: 0.6;
 }
 
@@ -2226,20 +2224,21 @@ html, body {
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 800;
-  color: #C084FC;
+  color: #00E5FF;
   letter-spacing: 0.12em;
 }
 
 .monad-quote-text {
-  font-size: 14px;
+  font-size: 15px;
   font-style: italic;
-  color: var(--arc-text-muted);
+  color: #CBD5E1;
+  line-height: 1.5;
   margin: 0;
 }
 
 .monad-signed-in {
   font-family: var(--font-mono);
-  font-size: 12px;
+  font-size: 13px;
   color: var(--arc-text-dim);
 }
 
@@ -2249,21 +2248,21 @@ html, body {
 }
 
 .monad-claim-button {
-  height: 44px;
-  padding: 0 36px;
+  height: 46px;
+  padding: 0 32px;
   border-radius: 9999px;
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 800;
-  color: #FFFFFF;
+  color: #040814;
   border: none;
   cursor: pointer;
-  margin-top: 6px;
-  transition: transform 0.2s;
+  transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .monad-claim-button:hover {
   transform: translateY(-2px);
 }
+
 
 

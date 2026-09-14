@@ -433,11 +433,9 @@ export const ArcCards: React.FC = () => {
           <p className="monad-quote-text">
             &ldquo;Forged on sub-second finality for the Arc Community&rdquo;
           </p>
-          {hasGenerated && (
-            <div className="monad-signed-in">
-              Forged for <span className="signed-handle">@{displayHandle}</span>
-            </div>
-          )}
+          <div className="monad-signed-in">
+            Forged for <span className="signed-handle">@{displayHandle || 'yournahin'}</span>
+          </div>
 
           <button
             type="button"
